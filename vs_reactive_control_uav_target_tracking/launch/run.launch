@@ -1,5 +1,0 @@
-<launch>
-    <node name="vs_reactive_control_uav_target_tracking" pkg="vs_reactive_control_uav_target_tracking" type="vs_reactive_control_uav_target_tracking_node" output="screen">
-        <rosparam file="$(find vs_reactive_control_uav_target_tracking)/param/param.yaml" />
-    </node>
-</launch>
