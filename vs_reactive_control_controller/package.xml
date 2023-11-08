@@ -50,15 +50,20 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>message_runtime</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
+  <build_depend>img_seg_cnn</build_depend>
+  <build_depend>mavros_msgs</build_depend>
+  <build_depend>mavros</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
-<<<<<<<< HEAD:vs_reactive_control_uav_target_tracking/package.xml
-========
   <build_export_depend>img_seg_cnn</build_export_depend>
   <build_export_depend>message_generation</build_export_depend>
   <build_export_depend>message_runtime</build_export_depend> 
@@ -66,21 +71,11 @@
   <build_export_depend>mavros</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
 
->>>>>>>> origin/main:vs_reactive_control_controller/package.xml
+
   <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-<<<<<<<< HEAD:vs_reactive_control_uav_target_tracking/package.xml
-
-
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- Other tools can request additional information be placed here -->
-
-  </export>
-========
   <exec_depend>img_seg_cnn</exec_depend>
   <exec_depend>message_generation</exec_depend>
   <exec_depend>message_runtime</exec_depend>  
@@ -89,5 +84,9 @@
   <exec_depend>mavros</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
 
->>>>>>>> origin/main:vs_reactive_control_controller/package.xml
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
 </package>
