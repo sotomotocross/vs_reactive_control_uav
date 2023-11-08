@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>vs_reactive_control_controller</name>
+  <name>vs_reactive_control_msgs</name>
   <version>0.0.0</version>
-  <description>The vs_reactive_control_controller package</description>
+  <description>The vs_reactive_control_msgs package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/vs_reactive_control_controller</url> -->
+  <!-- <url type="website">http://wiki.ros.org/vs_reactive_control_msgs</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -48,31 +48,15 @@
   <!--   <test_depend>gtest</test_depend> -->
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
+  
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_export_depend>geometry_msgs</build_export_depend>
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>rospy</build_export_depend>
-  <build_export_depend>std_msgs</build_export_depend>
-<<<<<<<< HEAD:vs_reactive_control_uav_target_tracking/package.xml
-========
-  <build_export_depend>img_seg_cnn</build_export_depend>
-  <build_export_depend>message_generation</build_export_depend>
-  <build_export_depend>message_runtime</build_export_depend> 
-  <build_export_depend>mavros_msgs</build_export_depend>
-  <build_export_depend>mavros</build_export_depend>
-  <build_export_depend>sensor_msgs</build_export_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_depend>geometry_msgs</build_depend>
+    <build_depend>message_generation</build_depend>
 
->>>>>>>> origin/main:vs_reactive_control_controller/package.xml
-  <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>roscpp</exec_depend>
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-<<<<<<<< HEAD:vs_reactive_control_uav_target_tracking/package.xml
+    <exec_depend>std_msgs</exec_depend>
+    <exec_depend>geometry_msgs</exec_depend>
+    <exec_depend>message_runtime</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
@@ -80,14 +64,4 @@
     <!-- Other tools can request additional information be placed here -->
 
   </export>
-========
-  <exec_depend>img_seg_cnn</exec_depend>
-  <exec_depend>message_generation</exec_depend>
-  <exec_depend>message_runtime</exec_depend>  
-  <exec_depend>eigen3</exec_depend>
-  <exec_depend>mavros_msgs</exec_depend>
-  <exec_depend>mavros</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-
->>>>>>>> origin/main:vs_reactive_control_controller/package.xml
 </package>
