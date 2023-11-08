@@ -11,3 +11,10 @@ line:
   theta_lower: deg(-8)     # [rad]
   line_vel_threshold: 40    # [px/s]
   line_min_length: 60       # [px]
+
+# vision_based_reactive_control_uav_target_tracking
+reactive_controller:
+  gain_tx: 1.0
+  gain_ty: 1.0
+  gain_tz: 2.0
+  gain_yaw: 1.0
