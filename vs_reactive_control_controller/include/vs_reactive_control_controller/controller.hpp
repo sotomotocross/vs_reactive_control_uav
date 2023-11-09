@@ -21,6 +21,7 @@
 #include <math.h>
 #include <cmath>
 #include <eigen3/Eigen/Dense>
+#include <string>
 
 using namespace std;
 using namespace Eigen;
@@ -40,13 +41,6 @@ namespace vs_reactive_control_controller
     Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh);
     ~Controller();
 
-    VectorXd state_vector;
-    VectorXd state_vector_des;
-    VectorXd cmd_vel;
-    VectorXd error;
-    VectorXd barx_meas;
-    VectorXd barx_des;
-
   private:
     /**
      * @brief ros lines callback, draws lines and their ids into the current image
@@ -62,7 +56,14 @@ namespace vs_reactive_control_controller
     MatrixXd VelTrans1(MatrixXd CameraVel1);
     MatrixXd VelTrans(MatrixXd CameraVel);
 
-    VectorXd Dynamics(VectorXd camTwist, VectorXd feat_prop);
+    MatrixXd Dynamics(VectorXd feat_prop);
+
+    MatrixXd grad_basis_x1(VectorXd x);
+    MatrixXd grad_basis_x2(VectorXd x);
+    MatrixXd grad_basis_x3(VectorXd x);
+    MatrixXd grad_basis_x4(VectorXd x);
+
+    MatrixXd weights_loading(string filename);
 
     /**
      * @brief controller update, calculated vel cmd and publishes it
@@ -150,6 +151,14 @@ namespace vs_reactive_control_controller
     double theta_lower_;
     double line_vel_threshold_;
     double line_min_length_;
+
+    VectorXd state_vector;
+    VectorXd state_vector_des;
+    VectorXd cmd_vel;
+    VectorXd error;
+    VectorXd barx_meas;
+    VectorXd barx_des;
+    VectorXd weights;
 
     MatrixXd gains;
     VectorXd feature_vector;
