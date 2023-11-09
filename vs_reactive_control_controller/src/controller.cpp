@@ -75,9 +75,7 @@ namespace vs_reactive_control_controller
   VectorXd Controller::Dynamics(VectorXd camTwist, VectorXd feat_prop)
   {
     MatrixXd model_mat(dim_s, dim_inputs);
-    //    cout << "model_mat shape: (" << model_mat.rows() << "," << model_mat.cols() << ")" << endl;
-
-    //    cout << "feat prop inside Dynamic system: " << feat_prop << endl;
+    
 
     // Barycenter dynamics calculation
     double term_1_4 = 0.0;
@@ -87,18 +85,9 @@ namespace vs_reactive_control_controller
 
     int N;
     N = transformed_features.size() / 2;
-    //    cout << "feat_prop: \n" << feat_prop << endl;
-    //    cout << "feat_prop[0]: " << feat_prop[0] << endl;
-    // cout << "transformed_features: \n"
-    //   << transformed_features.transpose() << endl;
-    //    cout << "transformed_features[0]: " << transformed_features[0] << endl;
-    //    cout << "length feature vector: " << transformed_features.size() << "\n" << endl;
-    //    cout << "length feat_prop vector: " << feat_prop.size() << "\n" << endl;
-
+    
     for (int i = 0; i < N - 1; i += 2)
     {
-      //   cout << "1st Vector Index: " << i << "\n" << endl;
-      //   cout << "feat_prop[i]*feat_prop[i+1]: " << feat_prop[i]*feat_prop[i+1] << "\n" << endl;
       term_1_4 = term_1_4 + feat_prop[i] * feat_prop[i + 1];
       term_1_5 = term_1_5 + (1 + pow(feat_prop[i], 2));
       term_2_4 = term_2_4 + (1 + pow(feat_prop[i + 1], 2));
@@ -121,12 +110,8 @@ namespace vs_reactive_control_controller
     VectorXd x(N);
     VectorXd y(N);
 
-    //    cout << "2N: " << 2*N << endl;
-    //    cout << "feat_prop: " << feat_prop.transpose() << endl;
-
     for (int i = 0; i < 2 * N - 1; i += 2)
     {
-      //   cout << "index for x: " << i << endl;
       x[k] = feat_prop[i];
       k++;
     }
@@ -135,18 +120,12 @@ namespace vs_reactive_control_controller
 
     for (int i = 1; i < 2 * N; i += 2)
     {
-      //   cout << "index for y: " << i << endl;
       y[k] = feat_prop[i];
       k++;
     }
 
-    //    cout << "x: " << x.transpose() << endl;
-    //    cout << "y: " << y.transpose() << endl;
-
     for (int i = 0; i < N - 1; i += 2)
     {
-      //   cout << "2nd Vector Index: " << i << "\n" << endl;
-      //   cout << "feat_prop[i]*feat_prop[i+1]: " << feat_prop[i]*feat_prop[i+1] << "\n" << endl;
       sum_4_4_1 = sum_4_4_1 + pow(feat_prop[i + 1], 2);
       sum_4_4_2 = sum_4_4_2 + feat_prop[i] * feat_prop[i + 1];
     }
@@ -157,7 +136,6 @@ namespace vs_reactive_control_controller
     term_4_4_4 = (x[transformed_first_min_index] * y[transformed_first_min_index] + x[transformed_second_min_index] * y[transformed_second_min_index] - (2 / N) * sum_4_4_2);
 
     g_4_4 = term_4_4_1 * term_4_4_2 + term_4_4_3 * term_4_4_4;
-    //    cout << "g_4_4: " << g_4_4 << endl;
 
     // Fifth term
     double term_4_5_1, term_4_5_2, term_4_5_3, term_4_5_4;
@@ -165,8 +143,6 @@ namespace vs_reactive_control_controller
 
     for (int i = 0; i < N - 1; i += 2)
     {
-      //   cout << "3rd Vector Index: " << i << "\n" << endl;
-      //   cout << "feat_prop[i]*feat_prop[i+1]: " << feat_prop[i]*feat_prop[i+1] << "\n" << endl;
       sum_4_5_1 = sum_4_5_1 + pow(feat_prop[i], 2);
       sum_4_5_2 = sum_4_5_2 + feat_prop[i] * feat_prop[i + 1];
     }
@@ -177,11 +153,9 @@ namespace vs_reactive_control_controller
     term_4_5_4 = (x[transformed_first_min_index] * y[transformed_first_min_index] + x[transformed_second_min_index] * y[transformed_second_min_index] - (2 / N) * sum_4_5_2);
 
     g_4_5 = term_4_5_1 * term_4_5_2 + term_4_5_3 * term_4_5_4;
-    //    cout << "g_4_5: " << g_4_5 << endl;
 
     // Fifth term
     g_4_6 = pow(transformed_tangent, 2) + 1;
-    // cout << "g_4_6: " << g_4_6 << endl;
 
     model_mat << -1 / Z0, 0.0, transformed_s_bar_x / Z0, transformed_s_bar_y,
         0.0, -1 / Z0, transformed_s_bar_y / Z0, -transformed_s_bar_x,
@@ -390,27 +364,6 @@ namespace vs_reactive_control_controller
     angle_radian = s_message->angle_radian;
     angle_deg = s_message->angle_deg;
 
-    // cout << "------------------------------------------------------------------" << endl;
-    // cout << "------------ Features shape and angle of the polygon -------------" << endl;
-    // cout << "------------------------------------------------------------------" << endl;
-
-    // cout << "feature_vector: " << feature_vector << endl;
-    // cout << "polygon_features: " << polygon_features << endl;
-
-    // cout << "s_bar_x: " << s_bar_x << endl;
-    // cout << "s_bar_y: " << s_bar_y << endl;
-
-    // cout << "first_min_index: " << first_min_index << endl;
-    // cout << "second_min_index: " << second_min_index << endl;
-
-    // cout << "custom_sigma: " << custom_sigma << endl;
-    // cout << "custom_sigma_square: " << custom_sigma_square << endl;
-    // cout << "custom_sigma_square_log: " << custom_sigma_square_log << endl;
-
-    // cout << "angle_tangent: " << angle_tangent << endl;
-    // cout << "angle_radian: " << angle_radian << endl;
-    // cout << "angle_deg: " << angle_deg << endl;
-
     flag = 1;
     // cout << "Feature callback flag: " << flag << endl;
   }
@@ -454,49 +407,12 @@ namespace vs_reactive_control_controller
       // cout << "i = " << i << endl;
       opencv_moments[i] = s_message->moments[i];
     }
-    // cout << "opencv_moments after subscription: " << opencv_moments.transpose() << endl;
-
-    // cout << "opencv_moments[1]/opencv_moments[0] = " << opencv_moments[1] / opencv_moments[0] << endl;
-    // cout << "(opencv_moments[1]/opencv_moments[0]-cu)/l = " << (opencv_moments[1] / opencv_moments[0] - cu) / l << endl;
-
-    // cout << "opencv_moments[2]/opencv_moments[0] = " << opencv_moments[2] / opencv_moments[0] << endl;
-    // cout << "(opencv_moments[2]/opencv_moments[0]-cv)/l = " << (opencv_moments[2] / opencv_moments[0] - cv) / l << endl;
 
     cX = opencv_moments[1] / opencv_moments[0];
     cY = opencv_moments[2] / opencv_moments[0];
 
     cX_int = (int)cX;
     cY_int = (int)cY;
-
-    // cout << "cX = " << cX << endl;
-    // cout << "cY = " << cY << endl;
-    // cout << "(cX - cu)/l = " << (cX - cu) / l << endl;
-    // cout << "(cY - cv)/l = " << (cY - cv) / l << endl;
-    // cout << "cX_int = " << cX_int << endl;
-    // cout << "cY_int = " << cY_int << endl;
-    // cout << "(cX_int - cu)/l = " << (cX_int - cu) / l << endl;
-    // cout << "(cY_int - cv)/l = " << (cY_int - cv) / l << endl;
-
-    // cout << "------------------------------------------------------------------" << endl;
-    // cout << "------ Transformed features shape and angle of the polygon -------" << endl;
-    // cout << "------------------------------------------------------------------" << endl;
-
-    // cout << "transformed_features: " << transformed_features.transpose() << endl;
-    // cout << "transformed_polygon_features: " << transformed_polygon_features.transpose() << endl;
-
-    // cout << "transformed_s_bar_x: " << transformed_s_bar_x << endl;
-    // cout << "transformed_s_bar_y: " << transformed_s_bar_y << endl;
-
-    // cout << "transformed_first_min_index: " << transformed_first_min_index << endl;
-    // cout << "transformed_second_min_index: " << transformed_second_min_index << endl;
-
-    // cout << "transformed_sigma: " << transformed_sigma << endl;
-    // cout << "transformed_sigma_square: " << transformed_sigma_square << endl;
-    // cout << "transformed_sigma_square_log: " << transformed_sigma_square_log << endl;
-
-    // cout << "transformed_tangent: " << transformed_tangent << endl;
-    // cout << "transformed_angle_radian: " << transformed_angle_radian << endl;
-    // cout << "transformed_angle_deg: " << transformed_angle_deg << endl;
 
     flag = 1;
     // cout << "Feature callback flag: " << flag << endl;
@@ -511,8 +427,6 @@ namespace vs_reactive_control_controller
     Z2 = alt_message->data;
     Z3 = alt_message->data;
     flag = 1;
-    // cout << "Altitude callback flag: " << flag << endl;
-    // printf("Relative altitude is (%g,%g,%g,%g) =", Z0, Z1, Z2, Z3);
   }
 
   void Controller::update()
@@ -545,21 +459,20 @@ namespace vs_reactive_control_controller
 
     while (ros::ok())
     {
-      state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
-      state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
-
-      cout << "state_vector = " << state_vector.transpose() << endl;
-      cout << "state_vector_des = " << state_vector_des.transpose() << endl;
-      // cout << "barx_meas = " << barx_meas.transpose() << endl;
-      // cout << "barx_des = " << barx_des.transpose() << endl;
-
-      error.setZero(6);
-
-      error = state_vector - state_vector_des;
-      cout << "error = " << error.transpose() << endl;
-
       vs_reactive_control_msgs::Line longest_line;
       double max_length = 0;
+
+      cout << "flag: " << flag << endl;
+      cout << "state_vector = " << state_vector << endl;
+      cout << "opencv_moments after subscription: " << opencv_moments.transpose() << endl;
+      // state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
+      // state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
+
+      // cout << "((opencv_moments[1] / opencv_moments[0]) - cu) / l = " << ((opencv_moments[1] / opencv_moments[0]) - cu) / l << endl;
+      // cout << "((opencv_moments[2] / opencv_moments[0]) - cu) / l = " << ((opencv_moments[2] / opencv_moments[0]) - cu) / l << endl;
+
+      // cout << "update_frequency_ = " << update_frequency_ << endl;
+      
 
       {
         std::unique_lock<std::mutex> lock(lines_mutex_);

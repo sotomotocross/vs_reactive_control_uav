@@ -40,6 +40,13 @@ namespace vs_reactive_control_controller
     Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh);
     ~Controller();
 
+    VectorXd state_vector;
+    VectorXd state_vector_des;
+    VectorXd cmd_vel;
+    VectorXd error;
+    VectorXd barx_meas;
+    VectorXd barx_des;
+
   private:
     /**
      * @brief ros lines callback, draws lines and their ids into the current image
@@ -154,13 +161,6 @@ namespace vs_reactive_control_controller
     VectorXd feat_u_vector;
     VectorXd feat_v_vector;
     VectorXd feat_vector;
-
-    VectorXd state_vector;
-    VectorXd state_vector_des;
-    VectorXd cmd_vel;
-    VectorXd error;
-    VectorXd barx_meas;
-    VectorXd barx_des;
 
     double gain_tx;
     double gain_ty;

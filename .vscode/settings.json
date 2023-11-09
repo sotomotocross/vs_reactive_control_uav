@@ -12,5 +12,10 @@
         "/usr/lib/python3.6/dist-packages",
         "/usr/lib/python3.6/dist-packages",
         "/usr/lib/python3.6/dist-packages"
-    ]
+    ],
+    "files.associations": {
+        "cmath": "cpp",
+        "complex": "cpp",
+        "ostream": "cpp"
+    }
 }

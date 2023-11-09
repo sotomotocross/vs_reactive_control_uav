@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.0.2)
 project(vs_reactive_control_controller)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS "-g")
 
 set(PACKAGE_DEPENDENCIES
     roscpp
@@ -28,7 +29,17 @@ find_package(catkin REQUIRED
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS ${PACKAGE_DEPENDS} message_runtime geometry_msgs message_generation roscpp rospy std_msgs img_seg_cnn mavros mavros_msgs sensor_msgs
+    CATKIN_DEPENDS ${PACKAGE_DEPENDS} 
+    message_runtime 
+    geometry_msgs 
+    message_generation 
+    roscpp 
+    rospy 
+    std_msgs 
+    img_seg_cnn 
+    mavros 
+    mavros_msgs 
+    sensor_msgs
     DEPENDS system_lib eigen3
 )
 
