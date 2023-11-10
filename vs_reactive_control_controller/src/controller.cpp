@@ -24,38 +24,51 @@ namespace vs_reactive_control_controller
 
   Controller::Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh) : nh_(nh), pnh_(pnh)
   {
+    // variables initialization
+    cX = 0.0; cY = 0.0; cX_int = 0; cY_int = 0;
+    Z0 = 0.0; Z1 = 0.0; Z2 = 0.0; Z3 = 0.0;
+    s_bar_x = 0.0; s_bar_y = 0.0;
+    custom_sigma = 1.0; custom_sigma_square = 1.0; custom_sigma_square_log = 1.0;
+    angle_tangent = 0.0; angle_radian = 0.0; angle_deg = 0.0;
+    transformed_s_bar_x = 0.0; transformed_s_bar_y = 0.0;
+    transformed_sigma = 1.0; transformed_sigma_square = 1.0; transformed_sigma_square_log = 1.0;
+    transformed_tangent = 0.0; transformed_angle_radian = 0.0; transformed_angle_deg = 0.0;
+
     // parameters
-    pnh_.param<double>("controller/update_frequency", update_frequency_, 30.0);
-    pnh_.param<double>("controller/k_p", k_p_, 0.01);
-    pnh_.param<double>("controller/k_d", k_d_, 0.01);
-    pnh_.param<double>("controller/max_vel_cmd", max_vel_cmd_, 4.0);
-    pnh_.param<double>("controller/test_yaw_rate", test_yaw_rate_, 0.0);
+    // pnh_.param<double>("controller/update_frequency", update_frequency_, 30.0);
+    // pnh_.param<double>("controller/k_p", k_p_, 0.01);
+    // pnh_.param<double>("controller/k_d", k_d_, 0.01);
+    // pnh_.param<double>("controller/max_vel_cmd", max_vel_cmd_, 4.0);
+    // pnh_.param<double>("controller/test_yaw_rate", test_yaw_rate_, 0.0);
 
-    pnh_.param<double>("line/theta_upper", theta_upper_, 0.3);
-    pnh_.param<double>("line/theta_lower", theta_lower_, -0.3);
-    pnh_.param<double>("line/line_vel_threshold", line_vel_threshold_, 4.0);
-    pnh_.param<double>("line/line_min_length", line_min_length_, 40.0);
+    // pnh_.param<double>("line/theta_upper", theta_upper_, 0.3);
+    // pnh_.param<double>("line/theta_lower", theta_lower_, -0.3);
+    // pnh_.param<double>("line/line_vel_threshold", line_vel_threshold_, 4.0);
+    // pnh_.param<double>("line/line_min_length", line_min_length_, 40.0);
 
+    pnh_.param<double>("reactive_controller/forward_term", forward_term, 1.0);
     pnh_.param<double>("reactive_controller/gain_tx", gain_tx, 1.0);
     pnh_.param<double>("reactive_controller/gain_ty", gain_ty, 1.0);
     pnh_.param<double>("reactive_controller/gain_tz", gain_tz, 2.0);
     pnh_.param<double>("reactive_controller/gain_yaw", gain_yaw, 1.0);
 
-    line_sub_ = nh_.subscribe("lines", 1, &Controller::linesCallback, this);
-    velocity_command_pub_ = nh_.advertise<geometry_msgs::TwistStamped>("vel_cmd", 10);
+    // line_sub_ = nh_.subscribe("lines", 1, &Controller::linesCallback, this);
+    // velocity_command_pub_ = nh_.advertise<geometry_msgs::TwistStamped>("vel_cmd", 10);
 
+    // ROS subscribers
     feature_sub_poly_custom_ = nh_.subscribe("polycalc_custom", 10, &Controller::featureCallback_poly_custom, this);
     feature_sub_poly_custom_tf_ = nh.subscribe("polycalc_custom_tf", 10, &Controller::featureCallback_poly_custom_tf, this);
     alt_sub_ = nh.subscribe("/mavros/global_position/rel_alt", 10, &Controller::altitudeCallback, this);
 
+    // ROS publishers
     vel_pub_ = nh.advertise<mavros_msgs::PositionTarget>("/mavros/setpoint_raw/local", 1);
     // rec_pub_ = nh.advertise<vsc_nmpc_uav_target_tracking::rec>("/vsc_nmpc_uav_target_tracking/msg/rec", 1);
-    cmd_vel_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/cmd_vel", 1);
+    // cmd_vel_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/cmd_vel", 1);
     state_vec_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/state_vec", 1);
     state_vec_des_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/state_vec_des", 1);
     img_moments_error_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/img_moments_error", 1);
-    moments_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/moments", 1);
-    central_moments_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/central_moments", 1);
+    // moments_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/moments", 1);
+    // central_moments_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/central_moments", 1);
 
     std::thread control_loop_thread(&Controller::update, this);
     control_loop_thread.detach();
@@ -66,12 +79,12 @@ namespace vs_reactive_control_controller
     velocity_command_pub_.shutdown();
   }
 
-  void Controller::linesCallback(const vs_reactive_control_msgs::LinesConstPtr &msg)
-  {
-    std::unique_lock<std::mutex> lock(lines_mutex_);
-    lines_ = *msg;
-    last_update_ = ros::Time::now();
-  }
+  // void Controller::linesCallback(const vs_reactive_control_msgs::LinesConstPtr &msg)
+  // {
+  //   std::unique_lock<std::mutex> lock(lines_mutex_);
+  //   lines_ = *msg;
+  //   last_update_ = ros::Time::now();
+  // }
 
   MatrixXd Controller::Dynamics(VectorXd feat_prop)
   {
@@ -671,7 +684,45 @@ namespace vs_reactive_control_controller
     return VelUAV1;
   }
 
-  //****UPDATE IMAGE FEATURE COORDINATES****//
+  MatrixXd Controller::weights_loading(string filename)
+  {
+    ifstream file(filename);
+
+    if (!file.is_open())
+    {
+      cerr << "Error opening file!" << endl;
+    }
+
+    vector<vector<double>> data;
+
+    string line;
+    while (getline(file, line))
+    {
+      istringstream iss(line);
+      vector<double> row;
+
+      string value;
+      while (getline(iss, value, ','))
+      {
+        row.push_back(stod(value));
+      }
+
+      data.push_back(row);
+    }
+
+    // Convert the vector of vectors to an Eigen MatrixXd
+    MatrixXd trained_weights(data.size(), data[0].size());
+    for (size_t i = 0; i < data.size(); ++i)
+    {
+      for (size_t j = 0; j < data[i].size(); ++j)
+      {
+        trained_weights(i, j) = data[i][j];
+      }
+    }
+    return trained_weights;
+  }
+
+  // ****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr &s_message)
   {
     feature_vector.setZero(s_message->features.size());
@@ -704,12 +755,13 @@ namespace vs_reactive_control_controller
     angle_deg = s_message->angle_deg;
 
     flag = 1;
-    // cout << "Feature callback flag: " << flag << endl;
+    // cout << "(not transformed) Feature callback flag: " << flag << endl;
   }
 
-  //****UPDATE IMAGE FEATURE COORDINATES****//
+  // //****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message)
   {
+    // cout << "Did we finally get in?" << endl;
     transformed_features.setZero(s_message->transformed_features.size());
     transformed_polygon_features.setZero(s_message->transformed_features.size() / 2, 2);
 
@@ -748,15 +800,9 @@ namespace vs_reactive_control_controller
     }
     cX = opencv_moments[1] / opencv_moments[0];
     cY = opencv_moments[2] / opencv_moments[0];
-    // cout << "cX = " << cX << endl;
-    // cout << "cY = " << cY << endl;
-    // cout << "opencv_moments = " << opencv_moments.transpose() << endl;
+
     cX_int = (int)cX;
     cY_int = (int)cY;
-    // cout << "cX_int = " << cX_int << endl;
-    // cout << "cY_int = " << cY_int << endl;
-
-    cout << "opencv_moments[0] = " << opencv_moments[0] << endl;
 
     flag = 1;
     // cout << "Feature callback flag: " << flag << endl;
@@ -765,27 +811,17 @@ namespace vs_reactive_control_controller
   //****UPDATE ALTITUDE****//
   void Controller::altitudeCallback(const std_msgs::Float64::ConstPtr &alt_message)
   {
-
     Z0 = alt_message->data;
     Z1 = alt_message->data;
     Z2 = alt_message->data;
     Z3 = alt_message->data;
     flag = 1;
+    // cout << "flag = " << flag << endl;
   }
 
   void Controller::update()
   {
-    ros::Rate r(update_frequency_);
-
-    geometry_msgs::TwistStamped vel_cmd;
-    vel_cmd.header.stamp = ros::Time::now();
-    vel_cmd.twist.linear.x = 0.0;
-    vel_cmd.twist.linear.y = 0.0;
-    vel_cmd.twist.linear.z = 0.0;
-
-    vel_cmd.twist.angular.x = 0.0;
-    vel_cmd.twist.angular.y = 0.0;
-    vel_cmd.twist.angular.z = 0.0;
+    // ros::Rate r(update_frequency_);
 
     //****SEND VELOCITIES TO AUTOPILOT THROUGH MAVROS****//
     mavros_msgs::PositionTarget dataMsg;
@@ -806,44 +842,93 @@ namespace vs_reactive_control_controller
       state_vector.setZero(4);
       state_vector_des.setZero(4);
       cmd_vel.setZero(4);
+      velocities.setZero(4);
       error.setZero(4);
-      // gains.setIdentity(4);
-      VectorXd w;
-      w.setZero(75);
+      gains.setIdentity(4, 4);
+
       double R = 1.0;
 
-      weights.setZero(75);
-      // cout << "weights = " << weights << endl;
-      MatrixXd grad_weights(1, 4);
-      
-      // cout << "opencv_moments[0] = " << opencv_moments[0] << endl;
+      MatrixXd grad_weights;
+      grad_weights.setZero(1, 4);
+
+      loaded_weights.setZero(75, 40);
+      string flnm;
+      flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_7_21_07_2023.csv";
 
       if (cX != 0 && cY != 0)
       {
-        // cout << "opencv_moments[0] = " << opencv_moments[0] << endl;
-        cout << "cu = " << cu << endl;
-        cout << "cv = " << cv << endl;
-        cout << "l = " << l << endl;
         state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
         state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
         error = state_vector - state_vector_des;
         cout << "error = " << error.transpose() << endl;
-        cout << "transformed_features = " << transformed_features.transpose() << endl;
-        // MatrixXd model = Controller::Dynamics(transformed_features);
-        // // cout << "model = " << model << endl;
-        // MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
-        // MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
-        // MatrixXd grad_x3 = Controller::grad_basis_x3(state_vector);
-        // MatrixXd grad_x4 = Controller::grad_basis_x4(state_vector);
+        // cout << "transformed_features = " << transformed_features.transpose() << endl;
+        MatrixXd model = Controller::Dynamics(transformed_features);
+        // cout << "model = " << model << endl;
 
-        // grad_weights << grad_x1 * w, grad_x2 * w, grad_x3 * w, grad_x4 * w;
+        MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
+        MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
+        MatrixXd grad_x3 = Controller::grad_basis_x3(state_vector);
+        MatrixXd grad_x4 = Controller::grad_basis_x4(state_vector);
+
+        loaded_weights = Controller::weights_loading(flnm);
+        grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
         // cout << "grad_weights = " << grad_weights << endl;
-        // cmd_vel = -0.5 * R * model.transpose() * grad_weights.transpose();
-        // cout << "cmd_vel = " << cmd_vel << endl;
+
+        velocities = -0.5 * R * model.transpose() * grad_weights.transpose();
+
+        // gains(0, 0) = gain_tx;
+        // gains(1, 1) = gain_ty;
+        // gains(2, 2) = gain_tz;
+        // gains(3, 3) = gain_yaw;
+
+        // cmd_vel = gains*velocities;
+        // cout << "final velocities = " << cmd_vel.transpose() << endl;
       }
 
-      velocity_command_pub_.publish(vel_cmd);
-      r.sleep();
+      //****SEND VELOCITIES TO AUTOPILOT THROUGH MAVROS****//
+      Matrix<double, 4, 1> caminputs;
+      caminputs(0, 0) = velocities[0];
+      caminputs(1, 0) = velocities[1];
+      caminputs(2, 0) = velocities[2];
+      caminputs(3, 0) = velocities[3];
+
+      Tx = VelTrans1(VelTrans(caminputs))(0, 0);
+      Ty = VelTrans1(VelTrans(caminputs))(1, 0);
+      Tz = VelTrans1(VelTrans(caminputs))(2, 0);
+      Oz = VelTrans1(VelTrans(caminputs))(5, 0);
+
+      // Τracking tuning
+      dataMsg.velocity.x = gain_tx * Tx+forward_term;
+      dataMsg.velocity.y = gain_ty * Ty;
+      dataMsg.velocity.z = gain_tz * Tz;
+      dataMsg.yaw_rate = gain_yaw * Oz;
+
+      printf("Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
+      cout << "\n"
+           << endl;
+
+      std_msgs::Float64MultiArray state_vecMsg;
+      for (int i = 0; i < state_vector.size(); i++)
+      {
+         state_vecMsg.data.push_back(state_vector[i]);
+      }
+
+      std_msgs::Float64MultiArray state_vec_desMsg;
+      for (int i = 0; i < state_vector_des.size(); i++)
+      {
+         state_vec_desMsg.data.push_back(state_vector_des[i]);
+      }
+
+      std_msgs::Float64MultiArray error_Msg;
+      for (int i = 0; i < error.size(); i++)
+      {
+         error_Msg.data.push_back(error[i]);
+      }
+
+      state_vec_pub_.publish(state_vecMsg);
+      state_vec_des_pub_.publish(state_vec_desMsg);
+      img_moments_error_pub_.publish(error_Msg);
+      // vel_pub.publish(dataMsg);
     }
   }
 

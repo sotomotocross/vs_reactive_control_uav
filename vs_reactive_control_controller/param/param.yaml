@@ -14,7 +14,8 @@ line:
 
 # vision_based_reactive_control_uav_target_tracking
 reactive_controller:
-  gain_tx: 1.0
-  gain_ty: 1.0
-  gain_tz: 2.0
-  gain_yaw: 1.0
+  forward_term: 0.2
+  gain_tx: 0.00008
+  gain_ty: 0.00008
+  gain_tz: 0.00008
+  gain_yaw: 0.00008

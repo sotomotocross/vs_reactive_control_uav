@@ -49,9 +49,9 @@ namespace vs_reactive_control_controller
 
     void altitudeCallback(const std_msgs::Float64::ConstPtr &alt_message);
 
-    void featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message);
+    void featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr & s_message);
 
-    void featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr &s_message);
+    void featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr & s_message);
 
     MatrixXd VelTrans1(MatrixXd CameraVel1);
     MatrixXd VelTrans(MatrixXd CameraVel);
@@ -84,12 +84,12 @@ namespace vs_reactive_control_controller
 
     ros::Publisher vel_pub_;
     ros::Publisher rec_pub_;
-    ros::Publisher cmd_vel_pub_ ;
+    // ros::Publisher cmd_vel_pub_ ;
     ros::Publisher state_vec_pub_ ;
     ros::Publisher state_vec_des_pub_ ;
     ros::Publisher img_moments_error_pub_ ;
-    ros::Publisher moments_pub_ ;
-    ros::Publisher central_moments_pub_ ;
+    // ros::Publisher moments_pub_ ;
+    // ros::Publisher central_moments_pub_ ;
 
     // PD controller
     double update_frequency_;
@@ -154,11 +154,10 @@ namespace vs_reactive_control_controller
 
     VectorXd state_vector;
     VectorXd state_vector_des;
+    VectorXd velocities;
     VectorXd cmd_vel;
     VectorXd error;
-    VectorXd barx_meas;
-    VectorXd barx_des;
-    VectorXd weights;
+    MatrixXd loaded_weights;
 
     MatrixXd gains;
     VectorXd feature_vector;
@@ -171,6 +170,7 @@ namespace vs_reactive_control_controller
     VectorXd feat_v_vector;
     VectorXd feat_vector;
 
+    double forward_term;
     double gain_tx;
     double gain_ty;
     double gain_tz;

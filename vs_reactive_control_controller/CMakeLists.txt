@@ -9,7 +9,6 @@ set(PACKAGE_DEPENDENCIES
     roscpp
     std_msgs
     geometry_msgs
-    line_event_tracker_msgs
 )
 
 find_package(catkin REQUIRED
