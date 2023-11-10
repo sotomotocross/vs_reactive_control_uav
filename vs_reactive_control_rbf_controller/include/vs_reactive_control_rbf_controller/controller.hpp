@@ -61,6 +61,8 @@ namespace vs_reactive_control_rbf_controller
 
     MatrixXd weights_loading(string filename);
 
+    MatrixXd rbf_centers_calculation();
+
     /**
      * @brief controller update, calculated vel cmd and publishes it
      */
@@ -135,6 +137,7 @@ namespace vs_reactive_control_rbf_controller
     VectorXd cmd_vel;
     VectorXd error;
     MatrixXd loaded_weights;
+    MatrixXd calculated_rbf_centers;
 
     MatrixXd gains;
     VectorXd feature_vector;
