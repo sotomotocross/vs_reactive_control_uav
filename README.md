@@ -1,5 +1,5 @@
 # Vision-based Reactive control on UAVs for target tracking
-
+This is a ROS C++ package of vision-based Reactive Control strategy for UAV aiming on target tracking. The general application of thiese controllers is a dynamic coastline in the presenc of waves. The different version of visual servoing will be analyzed belowThe controllers were all developed in a UAV synthetic simulation environment: https://github.com/sotomotocross/UAV_simulator_ArduCopter.git
 
 # Things to Do 
 1) Are we okay with the state vectors and model using? What are we using?
