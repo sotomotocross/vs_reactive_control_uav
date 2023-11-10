@@ -2,8 +2,8 @@
 
 #include <ros/ros.h>
 
+
 #include <thread>
-#include <geometry_msgs/TwistStamped.h>
 #include "geometry_msgs/Twist.h"
 #include "mavros_msgs/PositionTarget.h"
 #include "img_seg_cnn/PREDdata.h"
@@ -23,7 +23,7 @@
 using namespace std;
 using namespace Eigen;
 
-namespace vs_reactive_control_controller
+namespace vs_reactive_control_rbf_controller
 {
 
   /**
@@ -42,6 +42,7 @@ namespace vs_reactive_control_controller
     /**
      * @brief ros lines callback, draws lines and their ids into the current image
      */
+
     void altitudeCallback(const std_msgs::Float64::ConstPtr &alt_message);
 
     void featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr & s_message);
@@ -82,7 +83,7 @@ namespace vs_reactive_control_controller
     ros::Publisher state_vec_pub_ ;
     ros::Publisher state_vec_des_pub_ ;
     ros::Publisher img_moments_error_pub_ ;
-    
+
     const int dim_inputs = 4;
     int dim_s = 4;
 

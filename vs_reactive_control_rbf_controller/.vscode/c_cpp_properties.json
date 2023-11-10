@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/sotiris/controllers_catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/include/**",
+        "/home/sotiris/controllers_catkin_ws/src/vsc_nmpc_uav_target_tracking/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

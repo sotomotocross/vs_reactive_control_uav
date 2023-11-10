@@ -1,0 +1,21 @@
+controller:
+  update_frequency: 10     # [hz]
+  k_p: 0.030                 # []
+  k_d: 0.00001                 # []
+  max_vel_cmd: 2.5            # [rad/s]
+
+  test_yaw_rate: 2.0        # [rad/s]
+
+line:
+  theta_upper: deg(8)      # [rad]
+  theta_lower: deg(-8)     # [rad]
+  line_vel_threshold: 40    # [px/s]
+  line_min_length: 60       # [px]
+
+# vision_based_reactive_control_uav_target_tracking
+reactive_controller:
+  forward_term: 0.2
+  gain_tx: 0.00008
+  gain_ty: 0.00008
+  gain_tz: 0.00008
+  gain_yaw: 0.00008

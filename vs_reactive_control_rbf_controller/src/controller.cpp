@@ -1,4 +1,4 @@
-#include "vs_reactive_control_controller/controller.hpp"
+#include "vs_reactive_control_rbf_controller/controller.hpp"
 
 #include <thread>
 #include <geometry_msgs/TwistStamped.h>
@@ -19,7 +19,7 @@
 #include <cmath>
 #include <eigen3/Eigen/Dense>
 
-namespace vs_reactive_control_controller
+namespace vs_reactive_control_rbf_controller
 {
 
   Controller::Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh) : nh_(nh), pnh_(pnh)
@@ -544,7 +544,7 @@ namespace vs_reactive_control_controller
 
       loaded_weights.setZero(75, 40);
       string flnm;
-      flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_7_21_07_2023.csv";
+      flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_rbf_controller/src/stored_weights_version_7_21_07_2023.csv";
 
       if (cX != 0 && cY != 0)
       {
