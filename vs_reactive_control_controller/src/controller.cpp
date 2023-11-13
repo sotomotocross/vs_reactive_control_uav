@@ -173,21 +173,81 @@ namespace vs_reactive_control_controller
     MatrixXd B_x1;
     B_x1.setZero(1, 75);
 
-    B_x1(0, 0) = 0.0; B_x1(0, 1) = 1.0; B_x1(0, 2) = 0.0; B_x1(0, 3) = 0.0; B_x1(0, 4) = 0.0;
-    B_x1(0, 5) = x(1); B_x1(0, 6) = x(2); B_x1(0, 7) = x(3); B_x1(0, 8) = 0.0; B_x1(0, 9) = 0.0;
-    B_x1(0, 10) = 0.0; B_x1(0, 11) = 2 * x(0); B_x1(0, 12) = 0.0; B_x1(0, 13) = 0.0; B_x1(0, 14) = 0.0;
-    B_x1(0, 15) = 2 * x(0) * x(1); B_x1(0, 16) = 2 * x(0) * x(2); B_x1(0, 17) = 2 * x(0) * x(3); B_x1(0, 18) = pow(x(1), 2); B_x1(0, 19) = 0.0;
-    B_x1(0, 20) = 0.0; B_x1(0, 21) = pow(x(2), 2); B_x1(0, 22) = 0.0; B_x1(0, 23) = 0.0; B_x1(0, 24) = pow(x(3), 2);
-    B_x1(0, 25) = 0.0; B_x1(0, 26) = 0.0; B_x1(0, 27) = 3 * pow(x(0), 2); B_x1(0, 28) = 0.0; B_x1(0, 29) = 0.0;
-    B_x1(0, 30) = 0.0; B_x1(0, 31) = 3 * pow(x(0), 2) * x(1); B_x1(0, 32) = 3 * pow(x(0), 2) * x(2); B_x1(0, 33) = 3 * pow(x(0), 2) * x(3); B_x1(0, 34) = pow(x(1), 3);
-    B_x1(0, 35) = 0.0; B_x1(0, 36) = 0.0; B_x1(0, 37) = pow(x(2), 3); B_x1(0, 38) = 0.0; B_x1(0, 39) = 0.0;
-    B_x1(0, 40) = pow(x(3), 3); B_x1(0, 41) = 0.0; B_x1(0, 42) = 0.0; B_x1(0, 43) = 3 * pow(x(0), 2) * pow(x(1), 2); B_x1(0, 44) = 3 * pow(x(0), 2) * pow(x(2), 2);
-    B_x1(0, 45) = 3 * pow(x(0), 2) * pow(x(3), 2); B_x1(0, 46) = 2 * pow(x(1), 3) * x(0); B_x1(0, 47) = 0.0; B_x1(0, 48) = 0.0; B_x1(0, 49) = 2 * pow(x(2), 3) * x(0);
-    B_x1(0, 50) = 0.0; B_x1(0, 51) = 0.0; B_x1(0, 52) = 2 * pow(x(3), 3) * x(0); B_x1(0, 53) = 0.0; B_x1(0, 54) = 0.0;
-    B_x1(0, 55) = 4 * pow(x(0), 3); B_x1(0, 56) = 0.0; B_x1(0, 57) = 0.0; B_x1(0, 58) = 0.0; B_x1(0, 59) = 4 * pow(x(0), 3) * x(1);
-    B_x1(0, 60) = 4 * pow(x(0), 3) * x(2); B_x1(0, 61) = 4 * pow(x(0), 3) * x(3); B_x1(0, 62) = pow(x(1), 4); B_x1(0, 63) = 0.0; B_x1(0, 64) = 0.0;
-    B_x1(0, 65) = pow(x(2), 4); B_x1(0, 66) = 0.0; B_x1(0, 67) = 0.0; B_x1(0, 68) = pow(x(3), 4); B_x1(0, 69) = 0.0; 
-    B_x1(0, 70) = 0.0; B_x1(0, 71) = 5 * pow(x(0), 4); B_x1(0, 72) = 0.0; B_x1(0, 73) = 0.0; B_x1(0, 74) = 0.0;
+    B_x1(0, 0) = 0.0;
+    B_x1(0, 1) = 1.0;
+    B_x1(0, 2) = 0.0;
+    B_x1(0, 3) = 0.0;
+    B_x1(0, 4) = 0.0;
+    B_x1(0, 5) = x(1);
+    B_x1(0, 6) = x(2);
+    B_x1(0, 7) = x(3);
+    B_x1(0, 8) = 0.0;
+    B_x1(0, 9) = 0.0;
+    B_x1(0, 10) = 0.0;
+    B_x1(0, 11) = 2 * x(0);
+    B_x1(0, 12) = 0.0;
+    B_x1(0, 13) = 0.0;
+    B_x1(0, 14) = 0.0;
+    B_x1(0, 15) = 2 * x(0) * x(1);
+    B_x1(0, 16) = 2 * x(0) * x(2);
+    B_x1(0, 17) = 2 * x(0) * x(3);
+    B_x1(0, 18) = pow(x(1), 2);
+    B_x1(0, 19) = 0.0;
+    B_x1(0, 20) = 0.0;
+    B_x1(0, 21) = pow(x(2), 2);
+    B_x1(0, 22) = 0.0;
+    B_x1(0, 23) = 0.0;
+    B_x1(0, 24) = pow(x(3), 2);
+    B_x1(0, 25) = 0.0;
+    B_x1(0, 26) = 0.0;
+    B_x1(0, 27) = 3 * pow(x(0), 2);
+    B_x1(0, 28) = 0.0;
+    B_x1(0, 29) = 0.0;
+    B_x1(0, 30) = 0.0;
+    B_x1(0, 31) = 3 * pow(x(0), 2) * x(1);
+    B_x1(0, 32) = 3 * pow(x(0), 2) * x(2);
+    B_x1(0, 33) = 3 * pow(x(0), 2) * x(3);
+    B_x1(0, 34) = pow(x(1), 3);
+    B_x1(0, 35) = 0.0;
+    B_x1(0, 36) = 0.0;
+    B_x1(0, 37) = pow(x(2), 3);
+    B_x1(0, 38) = 0.0;
+    B_x1(0, 39) = 0.0;
+    B_x1(0, 40) = pow(x(3), 3);
+    B_x1(0, 41) = 0.0;
+    B_x1(0, 42) = 0.0;
+    B_x1(0, 43) = 3 * pow(x(0), 2) * pow(x(1), 2);
+    B_x1(0, 44) = 3 * pow(x(0), 2) * pow(x(2), 2);
+    B_x1(0, 45) = 3 * pow(x(0), 2) * pow(x(3), 2);
+    B_x1(0, 46) = 2 * pow(x(1), 3) * x(0);
+    B_x1(0, 47) = 0.0;
+    B_x1(0, 48) = 0.0;
+    B_x1(0, 49) = 2 * pow(x(2), 3) * x(0);
+    B_x1(0, 50) = 0.0;
+    B_x1(0, 51) = 0.0;
+    B_x1(0, 52) = 2 * pow(x(3), 3) * x(0);
+    B_x1(0, 53) = 0.0;
+    B_x1(0, 54) = 0.0;
+    B_x1(0, 55) = 4 * pow(x(0), 3);
+    B_x1(0, 56) = 0.0;
+    B_x1(0, 57) = 0.0;
+    B_x1(0, 58) = 0.0;
+    B_x1(0, 59) = 4 * pow(x(0), 3) * x(1);
+    B_x1(0, 60) = 4 * pow(x(0), 3) * x(2);
+    B_x1(0, 61) = 4 * pow(x(0), 3) * x(3);
+    B_x1(0, 62) = pow(x(1), 4);
+    B_x1(0, 63) = 0.0;
+    B_x1(0, 64) = 0.0;
+    B_x1(0, 65) = pow(x(2), 4);
+    B_x1(0, 66) = 0.0;
+    B_x1(0, 67) = 0.0;
+    B_x1(0, 68) = pow(x(3), 4);
+    B_x1(0, 69) = 0.0;
+    B_x1(0, 70) = 0.0;
+    B_x1(0, 71) = 5 * pow(x(0), 4);
+    B_x1(0, 72) = 0.0;
+    B_x1(0, 73) = 0.0;
+    B_x1(0, 74) = 0.0;
 
     return B_x1;
   }
@@ -197,21 +257,81 @@ namespace vs_reactive_control_controller
     MatrixXd B_x2;
     B_x2.setZero(1, 75);
 
-    B_x2(0, 0) = 0.0; B_x2(0, 1) = 0.0; B_x2(0, 2) = 1.0; B_x2(0, 3) = 0.0; B_x2(0, 4) = 0.0;
-    B_x2(0, 5) = x(0); B_x2(0, 6) = 0.0; B_x2(0, 7) = 0.0; B_x2(0, 8) = x(2); B_x2(0, 9) = x(3);
-    B_x2(0, 10) = 0.0; B_x2(0, 11) = 0.0; B_x2(0, 12) = 2 * x(1); B_x2(0, 13) = 0.0; B_x2(0, 14) = 0.0;
-    B_x2(0, 15) = pow(x(0), 2); B_x2(0, 16) = 0.0; B_x2(0, 17) = 0.0; B_x2(0, 18) = 2 * x(1) * x(0); B_x2(0, 19) = 2 * x(1) * x(2);
-    B_x2(0, 20) = 2 * x(1) * x(3); B_x2(0, 21) = 0.0; B_x2(0, 22) = pow(x(2), 2); B_x2(0, 23) = 0.0; B_x2(0, 24) = 0.0;
-    B_x2(0, 25) = pow(x(3), 2); B_x2(0, 26) = 0.0; B_x2(0, 27) = 0.0; B_x2(0, 28) = 3 * pow(x(1), 2); B_x2(0, 29) = 0.0;
-    B_x2(0, 30) = 0.0; B_x2(0, 31) = pow(x(0), 3); B_x2(0, 32) = 0.0; B_x2(0, 33) = 0.0; B_x2(0, 34) = 3 * pow(x(1), 2) * x(0);
-    B_x2(0, 35) = 3 * pow(x(1), 2) * x(2); B_x2(0, 36) = 3 * pow(x(1), 2) * x(3); B_x2(0, 37) = 0.0; B_x2(0, 38) = pow(x(2), 3); B_x2(0, 39) = 0.0;
-    B_x2(0, 40) = 0.0; B_x2(0, 41) = pow(x(3), 3); B_x2(0, 42) = 0.0; B_x2(0, 43) = 2 * pow(x(0), 3) * x(1); B_x2(0, 44) = 0.0;
-    B_x2(0, 45) = 0.0; B_x2(0, 46) = 3 * pow(x(1), 2) * pow(x(0), 2); B_x2(0, 47) = 3 * pow(x(1), 2) * pow(x(2), 2); B_x2(0, 48) = 3 * pow(x(1), 2) * pow(x(3), 2); B_x2(0, 49) = 0.0;
-    B_x2(0, 50) = 2 * pow(x(2), 3) * x(1); B_x2(0, 51) = 0.0; B_x2(0, 52) = 0.0; B_x2(0, 53) = 2 * pow(x(3), 3) * x(1); B_x2(0, 54) = 0.0;
-    B_x2(0, 55) = 0.0; B_x2(0, 56) = 4 * pow(x(1), 3); B_x2(0, 57) = 0.0; B_x2(0, 58) = 0.0; B_x2(0, 59) = pow(x(0), 4);
-    B_x2(0, 60) = 0.0; B_x2(0, 61) = 0.0; B_x2(0, 62) = 4 * pow(x(1), 3) * x(0); B_x2(0, 63) = 4 * pow(x(1), 3) * x(2); B_x2(0, 64) = 4 * pow(x(1), 3) * x(3);
-    B_x2(0, 65) = 0.0; B_x2(0, 66) = pow(x(2), 4); B_x2(0, 67) = 0.0; B_x2(0, 68) = 0.0; B_x2(0, 69) = pow(x(3), 4);
-    B_x2(0, 70) = 0.0; B_x2(0, 71) = 0.0; B_x2(0, 72) = 5 * pow(x(1), 4); B_x2(0, 73) = 0.0; B_x2(0, 74) = 0.0;
+    B_x2(0, 0) = 0.0;
+    B_x2(0, 1) = 0.0;
+    B_x2(0, 2) = 1.0;
+    B_x2(0, 3) = 0.0;
+    B_x2(0, 4) = 0.0;
+    B_x2(0, 5) = x(0);
+    B_x2(0, 6) = 0.0;
+    B_x2(0, 7) = 0.0;
+    B_x2(0, 8) = x(2);
+    B_x2(0, 9) = x(3);
+    B_x2(0, 10) = 0.0;
+    B_x2(0, 11) = 0.0;
+    B_x2(0, 12) = 2 * x(1);
+    B_x2(0, 13) = 0.0;
+    B_x2(0, 14) = 0.0;
+    B_x2(0, 15) = pow(x(0), 2);
+    B_x2(0, 16) = 0.0;
+    B_x2(0, 17) = 0.0;
+    B_x2(0, 18) = 2 * x(1) * x(0);
+    B_x2(0, 19) = 2 * x(1) * x(2);
+    B_x2(0, 20) = 2 * x(1) * x(3);
+    B_x2(0, 21) = 0.0;
+    B_x2(0, 22) = pow(x(2), 2);
+    B_x2(0, 23) = 0.0;
+    B_x2(0, 24) = 0.0;
+    B_x2(0, 25) = pow(x(3), 2);
+    B_x2(0, 26) = 0.0;
+    B_x2(0, 27) = 0.0;
+    B_x2(0, 28) = 3 * pow(x(1), 2);
+    B_x2(0, 29) = 0.0;
+    B_x2(0, 30) = 0.0;
+    B_x2(0, 31) = pow(x(0), 3);
+    B_x2(0, 32) = 0.0;
+    B_x2(0, 33) = 0.0;
+    B_x2(0, 34) = 3 * pow(x(1), 2) * x(0);
+    B_x2(0, 35) = 3 * pow(x(1), 2) * x(2);
+    B_x2(0, 36) = 3 * pow(x(1), 2) * x(3);
+    B_x2(0, 37) = 0.0;
+    B_x2(0, 38) = pow(x(2), 3);
+    B_x2(0, 39) = 0.0;
+    B_x2(0, 40) = 0.0;
+    B_x2(0, 41) = pow(x(3), 3);
+    B_x2(0, 42) = 0.0;
+    B_x2(0, 43) = 2 * pow(x(0), 3) * x(1);
+    B_x2(0, 44) = 0.0;
+    B_x2(0, 45) = 0.0;
+    B_x2(0, 46) = 3 * pow(x(1), 2) * pow(x(0), 2);
+    B_x2(0, 47) = 3 * pow(x(1), 2) * pow(x(2), 2);
+    B_x2(0, 48) = 3 * pow(x(1), 2) * pow(x(3), 2);
+    B_x2(0, 49) = 0.0;
+    B_x2(0, 50) = 2 * pow(x(2), 3) * x(1);
+    B_x2(0, 51) = 0.0;
+    B_x2(0, 52) = 0.0;
+    B_x2(0, 53) = 2 * pow(x(3), 3) * x(1);
+    B_x2(0, 54) = 0.0;
+    B_x2(0, 55) = 0.0;
+    B_x2(0, 56) = 4 * pow(x(1), 3);
+    B_x2(0, 57) = 0.0;
+    B_x2(0, 58) = 0.0;
+    B_x2(0, 59) = pow(x(0), 4);
+    B_x2(0, 60) = 0.0;
+    B_x2(0, 61) = 0.0;
+    B_x2(0, 62) = 4 * pow(x(1), 3) * x(0);
+    B_x2(0, 63) = 4 * pow(x(1), 3) * x(2);
+    B_x2(0, 64) = 4 * pow(x(1), 3) * x(3);
+    B_x2(0, 65) = 0.0;
+    B_x2(0, 66) = pow(x(2), 4);
+    B_x2(0, 67) = 0.0;
+    B_x2(0, 68) = 0.0;
+    B_x2(0, 69) = pow(x(3), 4);
+    B_x2(0, 70) = 0.0;
+    B_x2(0, 71) = 0.0;
+    B_x2(0, 72) = 5 * pow(x(1), 4);
+    B_x2(0, 73) = 0.0;
+    B_x2(0, 74) = 0.0;
 
     return B_x2;
   }
@@ -221,21 +341,81 @@ namespace vs_reactive_control_controller
     MatrixXd B_x3;
     B_x3.setZero(1, 75);
 
-    B_x3(0, 0) = 0.0; B_x3(0, 1) = 0.0; B_x3(0, 2) = 0.0; B_x3(0, 3) = 1.0; B_x3(0, 4) = 0.0;
-    B_x3(0, 5) = 0.0; B_x3(0, 6) = x(0); B_x3(0, 7) = 0.0; B_x3(0, 8) = x(1); B_x3(0, 9) = 0.0;
-    B_x3(0, 10) = x(3); B_x3(0, 11) = 0.0; B_x3(0, 12) = 0.0; B_x3(0, 13) = 2 * x(2); B_x3(0, 14) = 0.0;
-    B_x3(0, 15) = 0.0; B_x3(0, 16) = pow(x(0), 2); B_x3(0, 17) = 0.0; B_x3(0, 18) = 0.0; B_x3(0, 19) = pow(x(1), 2);
-    B_x3(0, 20) = 0.0; B_x3(0, 21) = 2 * x(2) * x(0); B_x3(0, 22) = 2 * x(2) * x(1); B_x3(0, 23) = 2 * x(2) * x(3); B_x3(0, 24) = 0.0;
-    B_x3(0, 25) = 0.0; B_x3(0, 26) = pow(x(3), 2); B_x3(0, 27) = 0.0; B_x3(0, 28) = 0.0; B_x3(0, 29) = 3 * pow(x(2), 2);
-    B_x3(0, 30) = 0.0; B_x3(0, 31) = 0.0; B_x3(0, 32) = pow(x(0), 3); B_x3(0, 33) = 0.0; B_x3(0, 34) = 0.0;
-    B_x3(0, 35) = pow(x(1), 3); B_x3(0, 36) = 0.0; B_x3(0, 37) = 3 * pow(x(2), 2) * x(0); B_x3(0, 38) = 3 * pow(x(2), 2) * x(1); B_x3(0, 39) = 3 * pow(x(2), 2) * x(3);
-    B_x3(0, 40) = 0.0; B_x3(0, 41) = 0.0; B_x3(0, 42) = pow(x(3), 3); B_x3(0, 43) = 0.0; B_x3(0, 44) = 2 * pow(x(0), 3) * x(2);
-    B_x3(0, 45) = 0.0; B_x3(0, 46) = 0.0; B_x3(0, 47) = 2 * pow(x(1), 3) * x(2); B_x3(0, 48) = 0.0; B_x3(0, 49) = 3 * pow(x(2), 2) * pow(x(0), 2);
-    B_x3(0, 50) = 3 * pow(x(2), 2) * pow(x(1), 2); B_x3(0, 51) = 3 * pow(x(2), 2) * pow(x(3), 2); B_x3(0, 52) = 0.0; B_x3(0, 53) = 0.0; B_x3(0, 54) = 2 * pow(x(3), 3) * x(2);
-    B_x3(0, 55) = 0.0; B_x3(0, 56) = 0.0; B_x3(0, 57) = 4 * pow(x(2), 3); B_x3(0, 58) = 0.0; B_x3(0, 59) = 0.0;
-    B_x3(0, 60) = pow(x(0), 4); B_x3(0, 61) = 0.0; B_x3(0, 62) = 0.0; B_x3(0, 63) = pow(x(1), 4); B_x3(0, 64) = 0.0;
-    B_x3(0, 65) = 4 * pow(x(2), 3) * x(0); B_x3(0, 66) = 4 * pow(x(2), 3) * x(1); B_x3(0, 67) = 4 * pow(x(2), 3) * x(3); B_x3(0, 68) = 0.0; B_x3(0, 69) = 0.0;
-    B_x3(0, 70) = pow(x(3), 4); B_x3(0, 71) = 0.0; B_x3(0, 72) = 0.0; B_x3(0, 73) = 5 * pow(x(2), 4); B_x3(0, 74) = 0.0;
+    B_x3(0, 0) = 0.0;
+    B_x3(0, 1) = 0.0;
+    B_x3(0, 2) = 0.0;
+    B_x3(0, 3) = 1.0;
+    B_x3(0, 4) = 0.0;
+    B_x3(0, 5) = 0.0;
+    B_x3(0, 6) = x(0);
+    B_x3(0, 7) = 0.0;
+    B_x3(0, 8) = x(1);
+    B_x3(0, 9) = 0.0;
+    B_x3(0, 10) = x(3);
+    B_x3(0, 11) = 0.0;
+    B_x3(0, 12) = 0.0;
+    B_x3(0, 13) = 2 * x(2);
+    B_x3(0, 14) = 0.0;
+    B_x3(0, 15) = 0.0;
+    B_x3(0, 16) = pow(x(0), 2);
+    B_x3(0, 17) = 0.0;
+    B_x3(0, 18) = 0.0;
+    B_x3(0, 19) = pow(x(1), 2);
+    B_x3(0, 20) = 0.0;
+    B_x3(0, 21) = 2 * x(2) * x(0);
+    B_x3(0, 22) = 2 * x(2) * x(1);
+    B_x3(0, 23) = 2 * x(2) * x(3);
+    B_x3(0, 24) = 0.0;
+    B_x3(0, 25) = 0.0;
+    B_x3(0, 26) = pow(x(3), 2);
+    B_x3(0, 27) = 0.0;
+    B_x3(0, 28) = 0.0;
+    B_x3(0, 29) = 3 * pow(x(2), 2);
+    B_x3(0, 30) = 0.0;
+    B_x3(0, 31) = 0.0;
+    B_x3(0, 32) = pow(x(0), 3);
+    B_x3(0, 33) = 0.0;
+    B_x3(0, 34) = 0.0;
+    B_x3(0, 35) = pow(x(1), 3);
+    B_x3(0, 36) = 0.0;
+    B_x3(0, 37) = 3 * pow(x(2), 2) * x(0);
+    B_x3(0, 38) = 3 * pow(x(2), 2) * x(1);
+    B_x3(0, 39) = 3 * pow(x(2), 2) * x(3);
+    B_x3(0, 40) = 0.0;
+    B_x3(0, 41) = 0.0;
+    B_x3(0, 42) = pow(x(3), 3);
+    B_x3(0, 43) = 0.0;
+    B_x3(0, 44) = 2 * pow(x(0), 3) * x(2);
+    B_x3(0, 45) = 0.0;
+    B_x3(0, 46) = 0.0;
+    B_x3(0, 47) = 2 * pow(x(1), 3) * x(2);
+    B_x3(0, 48) = 0.0;
+    B_x3(0, 49) = 3 * pow(x(2), 2) * pow(x(0), 2);
+    B_x3(0, 50) = 3 * pow(x(2), 2) * pow(x(1), 2);
+    B_x3(0, 51) = 3 * pow(x(2), 2) * pow(x(3), 2);
+    B_x3(0, 52) = 0.0;
+    B_x3(0, 53) = 0.0;
+    B_x3(0, 54) = 2 * pow(x(3), 3) * x(2);
+    B_x3(0, 55) = 0.0;
+    B_x3(0, 56) = 0.0;
+    B_x3(0, 57) = 4 * pow(x(2), 3);
+    B_x3(0, 58) = 0.0;
+    B_x3(0, 59) = 0.0;
+    B_x3(0, 60) = pow(x(0), 4);
+    B_x3(0, 61) = 0.0;
+    B_x3(0, 62) = 0.0;
+    B_x3(0, 63) = pow(x(1), 4);
+    B_x3(0, 64) = 0.0;
+    B_x3(0, 65) = 4 * pow(x(2), 3) * x(0);
+    B_x3(0, 66) = 4 * pow(x(2), 3) * x(1);
+    B_x3(0, 67) = 4 * pow(x(2), 3) * x(3);
+    B_x3(0, 68) = 0.0;
+    B_x3(0, 69) = 0.0;
+    B_x3(0, 70) = pow(x(3), 4);
+    B_x3(0, 71) = 0.0;
+    B_x3(0, 72) = 0.0;
+    B_x3(0, 73) = 5 * pow(x(2), 4);
+    B_x3(0, 74) = 0.0;
 
     return B_x3;
   }
@@ -245,21 +425,81 @@ namespace vs_reactive_control_controller
     MatrixXd B_x4;
     B_x4.setZero(1, 75);
 
-    B_x4(0, 0) = 0.0; B_x4(0, 1) = 0.0; B_x4(0, 2) = 0.0; B_x4(0, 3) = 0.0; B_x4(0, 4) = 1.0;
-    B_x4(0, 5) = 0.0; B_x4(0, 6) = 0.0; B_x4(0, 7) = x(3); B_x4(0, 8) = 0.0; B_x4(0, 9) = x(1); 
-    B_x4(0, 10) = x(2); B_x4(0, 11) = 0.0; B_x4(0, 12) = 0.0; B_x4(0, 13) = B_x4(0, 0) = 0.0; B_x4(0, 14) = 2 * x(3); 
-    B_x4(0, 15) = 0.0; B_x4(0, 16) = 0.0; B_x4(0, 17) = pow(x(0), 2); B_x4(0, 18) = 0.0; B_x4(0, 19) = 0.0; 
-    B_x4(0, 20) = pow(x(1), 2); B_x4(0, 21) = 0.0; B_x4(0, 22) = 0.0; B_x4(0, 23) = pow(x(2), 2); B_x4(0, 24) = 2 * x(3) * x(0); 
-    B_x4(0, 25) = 2 * x(3) * x(1); B_x4(0, 26) = 2 * x(3) * x(2); B_x4(0, 27) = 0.0; B_x4(0, 28) = 0.0; B_x4(0, 29) = 0.0; 
-    B_x4(0, 30) = 3 * pow(x(3), 2); B_x4(0, 31) = 0.0; B_x4(0, 32) = 0.0; B_x4(0, 33) = pow(x(0), 3); B_x4(0, 34) = 0.0; 
-    B_x4(0, 35) = 0.0; B_x4(0, 36) = pow(x(1), 3); B_x4(0, 37) = 0.0; B_x4(0, 38) = 0.0; B_x4(0, 39) = pow(x(2), 3); 
-    B_x4(0, 40) = 3 * pow(x(3), 2) * x(0); B_x4(0, 41) = 3 * pow(x(3), 2) * x(1); B_x4(0, 42) = 3 * pow(x(3), 2) * x(2); B_x4(0, 43) = 0.0; B_x4(0, 44) = 0.0; 
-    B_x4(0, 45) = 2 * pow(x(0), 3) * x(3); B_x4(0, 46) = 0.0; B_x4(0, 47) = 0.0; B_x4(0, 48) = 2 * pow(x(1), 3) * x(3); B_x4(0, 49) = 0.0; 
-    B_x4(0, 50) = 0.0; B_x4(0, 51) = 2 * pow(x(2), 3) * x(3); B_x4(0, 52) = 3 * pow(x(3), 2) * pow(x(0), 2); B_x4(0, 53) = 3 * pow(x(3), 2) * pow(x(1), 2); B_x4(0, 54) = 3 * pow(x(3), 2) * pow(x(2), 2); 
-    B_x4(0, 55) = 0.0; B_x4(0, 56) = 0.0; B_x4(0, 57) = 0.0; B_x4(0, 58) = 4 * pow(x(3), 3); B_x4(0, 59) = 0.0; 
-    B_x4(0, 60) = 0.0; B_x4(0, 61) = pow(x(0), 4); B_x4(0, 62) = 0.0; B_x4(0, 63) = 0.0; B_x4(0, 64) = pow(x(1), 4); 
-    B_x4(0, 65) = 0.0; B_x4(0, 66) = 0.0; B_x4(0, 67) = pow(x(2), 4); B_x4(0, 68) = 4 * pow(x(3), 3) * x(0); B_x4(0, 69) = 4 * pow(x(3), 3) * x(1); 
-    B_x4(0, 70) = 4 * pow(x(3), 3) * x(2); B_x4(0, 71) = 0.0; B_x4(0, 72) = 0.0; B_x4(0, 73) = 0.0;  B_x4(0, 74) = 5 * pow(x(3), 4);
+    B_x4(0, 0) = 0.0;
+    B_x4(0, 1) = 0.0;
+    B_x4(0, 2) = 0.0;
+    B_x4(0, 3) = 0.0;
+    B_x4(0, 4) = 1.0;
+    B_x4(0, 5) = 0.0;
+    B_x4(0, 6) = 0.0;
+    B_x4(0, 7) = x(3);
+    B_x4(0, 8) = 0.0;
+    B_x4(0, 9) = x(1);
+    B_x4(0, 10) = x(2);
+    B_x4(0, 11) = 0.0;
+    B_x4(0, 12) = 0.0;
+    B_x4(0, 13) = B_x4(0, 0) = 0.0;
+    B_x4(0, 14) = 2 * x(3);
+    B_x4(0, 15) = 0.0;
+    B_x4(0, 16) = 0.0;
+    B_x4(0, 17) = pow(x(0), 2);
+    B_x4(0, 18) = 0.0;
+    B_x4(0, 19) = 0.0;
+    B_x4(0, 20) = pow(x(1), 2);
+    B_x4(0, 21) = 0.0;
+    B_x4(0, 22) = 0.0;
+    B_x4(0, 23) = pow(x(2), 2);
+    B_x4(0, 24) = 2 * x(3) * x(0);
+    B_x4(0, 25) = 2 * x(3) * x(1);
+    B_x4(0, 26) = 2 * x(3) * x(2);
+    B_x4(0, 27) = 0.0;
+    B_x4(0, 28) = 0.0;
+    B_x4(0, 29) = 0.0;
+    B_x4(0, 30) = 3 * pow(x(3), 2);
+    B_x4(0, 31) = 0.0;
+    B_x4(0, 32) = 0.0;
+    B_x4(0, 33) = pow(x(0), 3);
+    B_x4(0, 34) = 0.0;
+    B_x4(0, 35) = 0.0;
+    B_x4(0, 36) = pow(x(1), 3);
+    B_x4(0, 37) = 0.0;
+    B_x4(0, 38) = 0.0;
+    B_x4(0, 39) = pow(x(2), 3);
+    B_x4(0, 40) = 3 * pow(x(3), 2) * x(0);
+    B_x4(0, 41) = 3 * pow(x(3), 2) * x(1);
+    B_x4(0, 42) = 3 * pow(x(3), 2) * x(2);
+    B_x4(0, 43) = 0.0;
+    B_x4(0, 44) = 0.0;
+    B_x4(0, 45) = 2 * pow(x(0), 3) * x(3);
+    B_x4(0, 46) = 0.0;
+    B_x4(0, 47) = 0.0;
+    B_x4(0, 48) = 2 * pow(x(1), 3) * x(3);
+    B_x4(0, 49) = 0.0;
+    B_x4(0, 50) = 0.0;
+    B_x4(0, 51) = 2 * pow(x(2), 3) * x(3);
+    B_x4(0, 52) = 3 * pow(x(3), 2) * pow(x(0), 2);
+    B_x4(0, 53) = 3 * pow(x(3), 2) * pow(x(1), 2);
+    B_x4(0, 54) = 3 * pow(x(3), 2) * pow(x(2), 2);
+    B_x4(0, 55) = 0.0;
+    B_x4(0, 56) = 0.0;
+    B_x4(0, 57) = 0.0;
+    B_x4(0, 58) = 4 * pow(x(3), 3);
+    B_x4(0, 59) = 0.0;
+    B_x4(0, 60) = 0.0;
+    B_x4(0, 61) = pow(x(0), 4);
+    B_x4(0, 62) = 0.0;
+    B_x4(0, 63) = 0.0;
+    B_x4(0, 64) = pow(x(1), 4);
+    B_x4(0, 65) = 0.0;
+    B_x4(0, 66) = 0.0;
+    B_x4(0, 67) = pow(x(2), 4);
+    B_x4(0, 68) = 4 * pow(x(3), 3) * x(0);
+    B_x4(0, 69) = 4 * pow(x(3), 3) * x(1);
+    B_x4(0, 70) = 4 * pow(x(3), 3) * x(2);
+    B_x4(0, 71) = 0.0;
+    B_x4(0, 72) = 0.0;
+    B_x4(0, 73) = 0.0;
+    B_x4(0, 74) = 5 * pow(x(3), 4);
 
     return B_x4;
   }
@@ -268,31 +508,57 @@ namespace vs_reactive_control_controller
   MatrixXd Controller::VelTrans(MatrixXd CameraVel)
   {
     Matrix<double, 3, 1> tt;
-    tt(0, 0) = 0; tt(1, 0) = 0; tt(2, 0) = 0;
+    tt(0, 0) = 0;
+    tt(1, 0) = 0;
+    tt(2, 0) = 0;
 
     Matrix<double, 3, 3> Tt;
-    Tt(0, 0) = 0; Tt(0, 1) = -tt(2, 0); Tt(0, 2) = tt(1, 0);
-    Tt(1, 0) = tt(2, 0); Tt(1, 1) = 0; Tt(1, 2) = -tt(0, 0);
-    Tt(2, 0) = -tt(1, 0); Tt(2, 1) = tt(0, 0); Tt(2, 2) = 0;
+    Tt(0, 0) = 0;
+    Tt(0, 1) = -tt(2, 0);
+    Tt(0, 2) = tt(1, 0);
+    Tt(1, 0) = tt(2, 0);
+    Tt(1, 1) = 0;
+    Tt(1, 2) = -tt(0, 0);
+    Tt(2, 0) = -tt(1, 0);
+    Tt(2, 1) = tt(0, 0);
+    Tt(2, 2) = 0;
 
-    double thx = M_PI_2; 
-    double thy = M_PI; 
+    double thx = M_PI_2;
+    double thy = M_PI;
     double thz = M_PI_2;
 
     Matrix<double, 3, 3> Rx;
-    Rx(0, 0) = 1; Rx(0, 1) = 0; Rx(0, 2) = 0;
-    Rx(1, 0) = 0; Rx(1, 1) = cos(thx); Rx(1, 2) = -sin(thx);
-    Rx(2, 0) = 0; Rx(2, 1) = sin(thx); Rx(2, 2) = cos(thx);
+    Rx(0, 0) = 1;
+    Rx(0, 1) = 0;
+    Rx(0, 2) = 0;
+    Rx(1, 0) = 0;
+    Rx(1, 1) = cos(thx);
+    Rx(1, 2) = -sin(thx);
+    Rx(2, 0) = 0;
+    Rx(2, 1) = sin(thx);
+    Rx(2, 2) = cos(thx);
 
     Matrix<double, 3, 3> Ry;
-    Ry(0, 0) = cos(thy); Ry(0, 1) = 0; Ry(0, 2) = sin(thy);
-    Ry(1, 0) = 0; Ry(1, 1) = 1; Ry(1, 2) = 0;
-    Ry(2, 0) = -sin(thy); Ry(2, 1) = 0; Ry(2, 2) = cos(thy);
+    Ry(0, 0) = cos(thy);
+    Ry(0, 1) = 0;
+    Ry(0, 2) = sin(thy);
+    Ry(1, 0) = 0;
+    Ry(1, 1) = 1;
+    Ry(1, 2) = 0;
+    Ry(2, 0) = -sin(thy);
+    Ry(2, 1) = 0;
+    Ry(2, 2) = cos(thy);
 
     Matrix<double, 3, 3> Rz;
-    Rz(0, 0) = cos(thz); Rz(0, 1) = -sin(thz); Rz(0, 2) = 0;
-    Rz(1, 0) = sin(thz); Rz(1, 1) = cos(thz); Rz(1, 2) = 0;
-    Rz(2, 0) = 0; Rz(2, 1) = 0; Rz(2, 2) = 1;
+    Rz(0, 0) = cos(thz);
+    Rz(0, 1) = -sin(thz);
+    Rz(0, 2) = 0;
+    Rz(1, 0) = sin(thz);
+    Rz(1, 1) = cos(thz);
+    Rz(1, 2) = 0;
+    Rz(2, 0) = 0;
+    Rz(2, 1) = 0;
+    Rz(2, 2) = 1;
 
     Matrix<double, 3, 3> Rth;
     Rth.setZero(3, 3);
@@ -326,32 +592,58 @@ namespace vs_reactive_control_controller
   MatrixXd Controller::VelTrans1(MatrixXd CameraVel1)
   {
     Matrix<double, 3, 1> tt1;
-    tt1(0, 0) = 0; tt1(1, 0) = 0; tt1(2, 0) = -0.14;
+    tt1(0, 0) = 0;
+    tt1(1, 0) = 0;
+    tt1(2, 0) = -0.14;
 
     Matrix<double, 3, 3> Tt1;
-    Tt1(0, 0) = 0; Tt1(0, 1) = -tt1(2, 0); Tt1(0, 2) = tt1(1, 0);
-    Tt1(1, 0) = tt1(2, 0); Tt1(1, 1) = 0; Tt1(1, 2) = -tt1(0, 0);
-    Tt1(2, 0) = -tt1(1, 0); Tt1(2, 1) = tt1(0, 0); Tt1(2, 2) = 0;
+    Tt1(0, 0) = 0;
+    Tt1(0, 1) = -tt1(2, 0);
+    Tt1(0, 2) = tt1(1, 0);
+    Tt1(1, 0) = tt1(2, 0);
+    Tt1(1, 1) = 0;
+    Tt1(1, 2) = -tt1(0, 0);
+    Tt1(2, 0) = -tt1(1, 0);
+    Tt1(2, 1) = tt1(0, 0);
+    Tt1(2, 2) = 0;
 
-    double thx1 = 0; 
-    double thy1 = M_PI_2; 
+    double thx1 = 0;
+    double thy1 = M_PI_2;
     double thz1 = 0;
 
     Matrix<double, 3, 3> Rx1;
-    Rx1(0, 0) = 1; Rx1(0, 1) = 0; Rx1(0, 2) = 0;
-    Rx1(1, 0) = 0; Rx1(1, 1) = cos(thx1); Rx1(1, 2) = -sin(thx1);
-    Rx1(2, 0) = 0;  Rx1(2, 1) = sin(thx1); Rx1(2, 2) = cos(thx1);       
+    Rx1(0, 0) = 1;
+    Rx1(0, 1) = 0;
+    Rx1(0, 2) = 0;
+    Rx1(1, 0) = 0;
+    Rx1(1, 1) = cos(thx1);
+    Rx1(1, 2) = -sin(thx1);
+    Rx1(2, 0) = 0;
+    Rx1(2, 1) = sin(thx1);
+    Rx1(2, 2) = cos(thx1);
 
     Matrix<double, 3, 3> Ry1;
-    Ry1(0, 0) = cos(thy1); Ry1(0, 1) = 0; Ry1(0, 2) = sin(thy1);
-    Ry1(1, 0) = 0; Ry1(1, 1) = 1; Ry1(1, 2) = 0;
-    Ry1(2, 0) = -sin(thy1); Ry1(2, 1) = 0; Ry1(2, 2) = cos(thy1);
-    
+    Ry1(0, 0) = cos(thy1);
+    Ry1(0, 1) = 0;
+    Ry1(0, 2) = sin(thy1);
+    Ry1(1, 0) = 0;
+    Ry1(1, 1) = 1;
+    Ry1(1, 2) = 0;
+    Ry1(2, 0) = -sin(thy1);
+    Ry1(2, 1) = 0;
+    Ry1(2, 2) = cos(thy1);
+
     Matrix<double, 3, 3> Rz1;
-    Rz1(0, 0) = cos(thz1); Rz1(0, 1) = -sin(thz1); Rz1(0, 2) = 0;
-    Rz1(1, 0) = sin(thz1); Rz1(1, 1) = cos(thz1); Rz1(1, 2) = 0;
-    Rz1(2, 0) = 0; Rz1(2, 1) = 0; Rz1(2, 2) = 1; 
-    
+    Rz1(0, 0) = cos(thz1);
+    Rz1(0, 1) = -sin(thz1);
+    Rz1(0, 2) = 0;
+    Rz1(1, 0) = sin(thz1);
+    Rz1(1, 1) = cos(thz1);
+    Rz1(1, 2) = 0;
+    Rz1(2, 0) = 0;
+    Rz1(2, 1) = 0;
+    Rz1(2, 2) = 1;
+
     Matrix<double, 3, 3> Rth1;
     Rth1.setZero(3, 3);
     Rth1 = Rz1 * Ry1 * Rx1;
@@ -421,8 +713,15 @@ namespace vs_reactive_control_controller
   // ****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr &s_message)
   {
+    // cout << "~~~~~~~~~~ featureCallback_poly_custom ~~~~~~~~~~" << endl;
     feature_vector.setZero(s_message->features.size());
     polygon_features.setZero(s_message->features.size() / 2, 2);
+
+    // cout << "feature_vector.size() = " << feature_vector.size() << endl;
+    // cout << "polygon_features.size() = " << polygon_features.size() << endl;
+
+    // cout << "feature_vector = " << feature_vector << endl;
+    // cout << "polygon_features = " << polygon_features << endl;
 
     for (int i = 0; i < s_message->features.size() - 1; i += 2)
     {
@@ -450,6 +749,13 @@ namespace vs_reactive_control_controller
     angle_radian = s_message->angle_radian;
     angle_deg = s_message->angle_deg;
 
+    // cout << "~~~~~~~~~~ featureCallback_poly_custom after assignment ~~~~~~~~~~" << endl;
+    // cout << "feature_vector.size() = " << feature_vector.size() << endl;
+    // cout << "polygon_features.size() = " << polygon_features.size() << endl;
+
+    // cout << "feature_vector = " << feature_vector << endl;
+    // cout << "polygon_features = " << polygon_features << endl;
+
     flag = 1;
     // cout << "(not transformed) Feature callback flag: " << flag << endl;
   }
@@ -457,18 +763,28 @@ namespace vs_reactive_control_controller
   // //****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message)
   {
-    // cout << "Did we finally get in?" << endl;
+    cout << "~~~~~~~~~~ featureCallback_poly_custom_tf ~~~~~~~~~~" << endl;
     transformed_features.setZero(s_message->transformed_features.size());
     transformed_polygon_features.setZero(s_message->transformed_features.size() / 2, 2);
 
+    cout << "transformed_features.size() = " << transformed_features.size() << endl;
+    cout << "transformed_polygon_features.size() = " << transformed_polygon_features.size() << endl;
+
+    // cout << "transformed_features = " << transformed_features << endl;
+    // cout << "transformed_polygon_features = " << transformed_polygon_features << endl;
+
     for (int i = 0; i < s_message->transformed_features.size() - 1; i += 2)
     {
+      cout << "Kai telika skame sto prwto loop?" << endl;
+      cout << "i = " << i << endl;
       transformed_features[i] = s_message->transformed_features[i];
       transformed_features[i + 1] = s_message->transformed_features[i + 1];
     }
 
     for (int i = 0, j = 0; i < s_message->transformed_features.size() - 1 && j < s_message->transformed_features.size() / 2; i += 2, ++j)
     {
+      cout << "Sto 2o loop?" << endl;
+      cout << "i = " << i << endl;
       transformed_polygon_features(j, 0) = transformed_features[i];
       transformed_polygon_features(j, 1) = transformed_features[i + 1];
     }
@@ -490,7 +806,8 @@ namespace vs_reactive_control_controller
     opencv_moments.setZero(s_message->moments.size());
     for (int i = 0; i < s_message->moments.size(); i++)
     {
-      // cout << "i = " << i << endl;
+      cout << "I exoume kana themataki sto opencv_moments loop?" << endl;
+      cout << "i = " << i << endl;
       opencv_moments[i] = s_message->moments[i];
     }
     cX = opencv_moments[1] / opencv_moments[0];
@@ -498,6 +815,13 @@ namespace vs_reactive_control_controller
 
     cX_int = (int)cX;
     cY_int = (int)cY;
+
+    cout << "~~~~~~~~~~ featureCallback_poly_custom_tf after assignment ~~~~~~~~~~" << endl;
+    cout << "transformed_features.size() = " << transformed_features.size() << endl;
+    cout << "transformed_polygon_features.size() = " << transformed_polygon_features.size() << endl;
+
+    cout << "transformed_features = " << transformed_features << endl;
+    cout << "transformed_polygon_features = " << transformed_polygon_features << endl;
 
     flag = 1;
     // cout << "Feature callback flag: " << flag << endl;
@@ -510,6 +834,10 @@ namespace vs_reactive_control_controller
     Z1 = alt_message->data;
     Z2 = alt_message->data;
     Z3 = alt_message->data;
+    // cout << "Z0 = " << Z0 << endl;
+    // cout << "Z1 = " << Z1 << endl;
+    // cout << "Z2 = " << Z2 << endl;
+    // cout << "Z3 = " << Z3 << endl;
     flag = 1;
     // cout << "flag = " << flag << endl;
   }
@@ -544,20 +872,33 @@ namespace vs_reactive_control_controller
 
       loaded_weights.setZero(75, 40);
       string flnm;
-      flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_7_21_07_2023.csv";
+      // flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_7_21_07_2023.csv";
+      flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_2_20_10_2023.csv";
+      // flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_4_20_10_2023.csv";
+      // flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_2_03_11_2023.csv";
 
-      if (cX != 0 && cY != 0)
+      if (cX != 0 && cY != 0 && Z0 != 0 && Z1 != 0 && Z2 != 0 && Z3 != 0)
       {
-        state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
-        // state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;
-        state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
-        // state_vector_des << s_bar_x_des, s_bar_y_des, sigma_log_des, angle_des_tan;
+        // state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
+        state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;;
+        // state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
+        state_vector_des << 0.0, 0.0, sigma_log_des, 0.0;
+
+        // Check for NaN values in state vectors
+        if (state_vector.hasNaN() || state_vector_des.hasNaN())
+        {
+          cerr << "Error: NaN values in state vectors." << endl;
+          cerr << "Location: Before velocities calculation." << endl;
+          exit(1); // Exit the function or return an error code as needed
+        }
 
         error = state_vector - state_vector_des;
-        cout << "error = " << error.transpose() << endl;
-        // cout << "transformed_features = " << transformed_features.transpose() << endl;
+        // cout << "sigma_log_des = " << sigma_log_des << endl;
+        // cout << "state_vector = " << state_vector.transpose() << endl;
+        // cout << "state_vector_des = " << state_vector_des.transpose() << endl;
+        // cout << "error = " << error.transpose() << endl;
+
         MatrixXd model = Controller::Dynamics(transformed_features);
-        // cout << "model = " << model << endl;
 
         MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
         MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
@@ -566,9 +907,24 @@ namespace vs_reactive_control_controller
 
         loaded_weights = Controller::weights_loading(flnm);
         grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
-        // cout << "grad_weights = " << grad_weights << endl;
+
+        // Check for NaN values in matrices
+        if (model.hasNaN() || grad_x1.hasNaN() || grad_x2.hasNaN() || grad_x3.hasNaN() || grad_x4.hasNaN() || grad_weights.hasNaN())
+        {
+          cerr << "Error: NaN values in matrices." << endl;
+          cerr << "Location: Before velocities calculation." << endl;
+          exit(1); // Exit the function or return an error code as needed
+        }
 
         velocities = -0.5 * R * model.transpose() * grad_weights.transpose();
+
+        // Check for NaN values in velocities
+        if (isnan(velocities.sum()))
+        {
+          cerr << "Error: NaN values in velocities." << endl;
+          cerr << "Location: After velocities calculation." << endl;
+          exit(1); // Exit the function or return an error code as needed
+        }
       }
 
       //****SEND VELOCITIES TO AUTOPILOT THROUGH MAVROS****//
@@ -583,14 +939,43 @@ namespace vs_reactive_control_controller
       Tz = VelTrans1(VelTrans(caminputs))(2, 0);
       Oz = VelTrans1(VelTrans(caminputs))(5, 0);
 
+      // printf("Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", Tx, Ty, Tz, Oz);
+      // cout << "\n"
+      //      << endl;
+
       dataMsg.velocity.x = gain_tx * Tx + forward_term;
       dataMsg.velocity.y = gain_ty * Ty;
       dataMsg.velocity.z = gain_tz * Tz;
       dataMsg.yaw_rate = gain_yaw * Oz;
 
-      printf("Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
-      cout << "\n"
-           << endl;
+      if (dataMsg.velocity.x >= 1.0)
+      {
+        dataMsg.velocity.x = 0.75;
+      }
+      if (dataMsg.velocity.x <= -1.0)
+      {
+        dataMsg.velocity.x = -0.75;
+      }
+      if (dataMsg.velocity.y >= 0.5)
+      {
+        dataMsg.velocity.y = 0.4;
+      }
+      if (dataMsg.velocity.y <= -0.4)
+      {
+        dataMsg.velocity.y = -0.4;
+      }
+      if (dataMsg.yaw_rate >= 0.3)
+      {
+        dataMsg.yaw_rate = 0.2;
+      }
+      if (dataMsg.yaw_rate <= -0.3)
+      {
+        dataMsg.yaw_rate = -0.2;
+      }
+
+      // printf("Final Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
+      // cout << "\n"
+      //      << endl;
 
       std_msgs::Float64MultiArray state_vecMsg;
       for (int i = 0; i < state_vector.size(); i++)
@@ -604,16 +989,16 @@ namespace vs_reactive_control_controller
         state_vec_desMsg.data.push_back(state_vector_des[i]);
       }
 
-      std_msgs::Float64MultiArray error_Msg;
-      for (int i = 0; i < error.size(); i++)
-      {
-        error_Msg.data.push_back(error[i]);
-      }
+      // std_msgs::Float64MultiArray error_Msg;
+      // for (int i = 0; i < error.size(); i++)
+      // {
+      //   error_Msg.data.push_back(error[i]);
+      // }
 
       state_vec_pub_.publish(state_vecMsg);
       state_vec_des_pub_.publish(state_vec_desMsg);
-      img_moments_error_pub_.publish(error_Msg);
-      // vel_pub.publish(dataMsg);
+      // img_moments_error_pub_.publish(error_Msg);
+      // vel_pub_.publish(dataMsg);
     }
   }
 
