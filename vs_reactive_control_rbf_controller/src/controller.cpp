@@ -65,7 +65,6 @@ namespace vs_reactive_control_rbf_controller
     vel_pub_ = nh.advertise<mavros_msgs::PositionTarget>("/mavros/setpoint_raw/local", 1);
     state_vec_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/state_vec", 1);
     state_vec_des_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/state_vec_des", 1);
-    img_moments_error_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/img_moments_error", 1);
 
     std::thread control_loop_thread(&Controller::update, this);
     control_loop_thread.detach();
@@ -76,7 +75,7 @@ namespace vs_reactive_control_rbf_controller
     vel_pub_.shutdown();
   }
 
-  MatrixXd Controller::Dynamics(VectorXd feat_prop)
+  MatrixXd Controller::Dynamics(VectorXd feat_prop, int first, int second)
   {
     MatrixXd model_mat(dim_s, dim_inputs);
 
@@ -87,7 +86,17 @@ namespace vs_reactive_control_rbf_controller
     double term_2_5 = 0.0;
 
     int N;
-    N = transformed_features.size() / 2;
+    N = feat_prop.size() / 2;
+    // cout << "\nN = " << N << endl;
+    // cout << "first = " << first << endl;
+    // cout << "second = " << second << endl;
+    // cout << "transformed_first_min_index = " << transformed_first_min_index << endl;
+    // cout << "transformed_second_min_index = " << transformed_second_min_index << endl;
+    // cout << "first_min_index = " << first_min_index << endl;
+    // cout << "second_min_index = " << second_min_index << endl;
+
+    // if ((first == 0 && second == N - 1) || (first == N - 1 && second == 0))
+    // {
 
     for (int i = 0; i < N - 1; i += 2)
     {
@@ -129,14 +138,15 @@ namespace vs_reactive_control_rbf_controller
 
     for (int i = 0; i < N - 1; i += 2)
     {
+      // cout << "i = " << i << endl;
       sum_4_4_1 = sum_4_4_1 + pow(feat_prop[i + 1], 2);
       sum_4_4_2 = sum_4_4_2 + feat_prop[i] * feat_prop[i + 1];
     }
 
-    term_4_4_1 = transformed_tangent / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_4_2 = (pow(y[transformed_first_min_index], 2) + pow(y[transformed_second_min_index], 2) - (2 / N) * sum_4_4_1);
-    term_4_4_3 = -1 / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_4_4 = (x[transformed_first_min_index] * y[transformed_first_min_index] + x[transformed_second_min_index] * y[transformed_second_min_index] - (2 / N) * sum_4_4_2);
+    term_4_4_1 = transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_4_2 = (pow(y[first], 2) + pow(y[second], 2) - (2 / N) * sum_4_4_1);
+    term_4_4_3 = -1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_4_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_4_2);
 
     g_4_4 = term_4_4_1 * term_4_4_2 + term_4_4_3 * term_4_4_4;
 
@@ -146,14 +156,15 @@ namespace vs_reactive_control_rbf_controller
 
     for (int i = 0; i < N - 1; i += 2)
     {
+      // cout << "i = " << i << endl;
       sum_4_5_1 = sum_4_5_1 + pow(feat_prop[i], 2);
       sum_4_5_2 = sum_4_5_2 + feat_prop[i] * feat_prop[i + 1];
     }
 
-    term_4_5_1 = 1 / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_5_2 = (pow(x[transformed_first_min_index], 2) + pow(x[transformed_second_min_index], 2) - (2 / N) * sum_4_5_1);
-    term_4_5_3 = -transformed_tangent / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_5_4 = (x[transformed_first_min_index] * y[transformed_first_min_index] + x[transformed_second_min_index] * y[transformed_second_min_index] - (2 / N) * sum_4_5_2);
+    term_4_5_1 = 1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_5_2 = (pow(x[first], 2) + pow(x[second], 2) - (2 / N) * sum_4_5_1);
+    term_4_5_3 = -transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_5_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_5_2);
 
     g_4_5 = term_4_5_1 * term_4_5_2 + term_4_5_3 * term_4_5_4;
 
@@ -164,6 +175,10 @@ namespace vs_reactive_control_rbf_controller
         0.0, -1 / Z0, transformed_s_bar_y / Z0, -transformed_s_bar_x,
         0.0, 0.0, 2 / Z0, 0.0,
         0.0, 0.0, 0.0, g_4_6;
+    // }
+
+    // cout << "model calculation before returning to main!" << endl;
+    // cout << "model_mat = \n" << model_mat << endl;
 
     return model_mat;
   }
@@ -672,80 +687,6 @@ namespace vs_reactive_control_rbf_controller
     return VelUAV1;
   }
 
-  //   Eigen::VectorXd grad_rbfs_basis(const Eigen::VectorXd& data_points, const Eigen::MatrixXd& centers) {
-  //     double sigma = 0.5; // Width of the RBF neurons
-
-  //     // Calculate the gradients
-  //     Eigen::VectorXd B_x1 = (data_points(0) - centers.col(0)).array().square() / (-2 * sigma * sigma);
-  //     Eigen::VectorXd B_x2 = (data_points(1) - centers.col(1)).array().square() / (-2 * sigma * sigma);
-  //     Eigen::VectorXd B_x3 = (data_points(2) - centers.col(2)).array().square() / (-2 * sigma * sigma);
-  //     Eigen::VectorXd B_x4 = (data_points(3) - centers.col(3)).array().square() / (-2 * sigma * sigma);
-
-  //     B_x1 = B_x1.array().exp();
-  //     B_x2 = B_x2.array().exp();
-  //     B_x3 = B_x3.array().exp();
-  //     B_x4 = B_x4.array().exp();
-
-  //     // Combine the results into a single vector
-  //     Eigen::VectorXd res(4);
-  //     res << B_x1, B_x2, B_x3, B_x4;
-
-  //     return res;
-  // }
-
-  MatrixXd Controller::rbf_centers_calculation()
-  {
-    // Define the parameters
-    VectorXd A_centers = VectorXd::LinSpaced(10, -85.0, 95.0);
-    VectorXd Z_centers(1);
-    Z_centers << 6.0;
-
-    // Initialize variables
-    int kk = 1;
-    MatrixXd centers(1, 4); // Initialize with a dummy row
-
-    // Loop over Z_centers
-    for (int i = 0; i < Z_centers.size(); ++i)
-    {
-      // Create meshgrid for X_centers and Y_centers
-      VectorXd X_centers = VectorXd::LinSpaced(180, -0.9 * Z_centers(i), 0.9 * Z_centers(i));
-      VectorXd Y_centers = X_centers;
-
-      // Create meshgrid for A_centers
-      MatrixXd A_meshgrid = A_centers.replicate(X_centers.size(), 1);
-
-      // Combine X_centers, Y_centers, Z_centers, and A_meshgrid
-      MatrixXd current_centers(X_centers.size() * Y_centers.size(), 4);
-      cout << "Shape of current_centers: "
-           << "(" << current_centers.rows() << "," << current_centers.cols() << ")" << endl;
-      current_centers.setZero(current_centers.rows(), current_centers.cols());
-      
-      current_centers.col(0) = X_centers.replicate(1, Y_centers.size()).transpose().reshaped(X_centers.size() * Y_centers.size(), 1);
-      cout << "Shape of current_centers.col(0): "
-           << "(" << current_centers.col(0).rows() << "," << current_centers.col(0).cols() << ")" << endl;
-      current_centers.col(1) = Y_centers.replicate(X_centers.size(), 1).reshaped(X_centers.size() * Y_centers.size(), 1);
-      cout << "Shape of current_centers.col(1): "
-           << "(" << current_centers.col(1).rows() << "," << current_centers.col(1).cols() << ")" << endl;
-      current_centers.col(2) = Z_centers(i) * VectorXd::Ones(X_centers.size() * Y_centers.size());
-      cout << "Shape of current_centers.col(2): "
-           << "(" << current_centers.col(2).rows() << "," << current_centers.col(2).cols() << ")" << endl;
-      current_centers.col(3) = Map<VectorXd>(A_meshgrid.data(), A_meshgrid.size());
-      cout << "Shape of current_centers.col(3): "
-           << "(" << current_centers.col(3).rows() << "," << current_centers.col(3).cols() << ")" << endl;
-
-      // Concatenate current_centers to the final centers matrix
-      centers.conservativeResize(centers.rows() + current_centers.rows(), current_centers.cols());
-      centers.bottomRows(current_centers.rows()) = current_centers;
-
-      kk += current_centers.rows();
-    }
-
-    // Display the result (optional)
-    // cout << centers << endl;
-
-    return centers;
-  }
-
   MatrixXd Controller::weights_loading(string filename)
   {
     ifstream file(filename);
@@ -823,17 +764,21 @@ namespace vs_reactive_control_rbf_controller
   // //****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message)
   {
-    transformed_features.setZero(s_message->transformed_features.size());
-    transformed_polygon_features.setZero(s_message->transformed_features.size() / 2, 2);
+    // cout << "~~~~~~~~~~ featureCallback_poly_custom_tf ~~~~~~~~~~" << endl;
+    int N = s_message->transformed_features.size();
+    transformed_features.setZero(N);
+    transformed_polygon_features.setZero(N / 2, 2);
 
-    for (int i = 0; i < s_message->transformed_features.size() - 1; i += 2)
+    for (int i = 0; i < N - 1; i += 2)
     {
+      // cout << "i = " << i << endl;
       transformed_features[i] = s_message->transformed_features[i];
       transformed_features[i + 1] = s_message->transformed_features[i + 1];
     }
 
-    for (int i = 0, j = 0; i < s_message->transformed_features.size() - 1 && j < s_message->transformed_features.size() / 2; i += 2, ++j)
+    for (int i = 0, j = 0; i < N - 1 && j < N / 2; i += 2, ++j)
     {
+      // cout << "i = " << i << endl;
       transformed_polygon_features(j, 0) = transformed_features[i];
       transformed_polygon_features(j, 1) = transformed_features[i + 1];
     }
@@ -855,6 +800,7 @@ namespace vs_reactive_control_rbf_controller
     opencv_moments.setZero(s_message->moments.size());
     for (int i = 0; i < s_message->moments.size(); i++)
     {
+      // cout << "i = " << i << endl;
       opencv_moments[i] = s_message->moments[i];
     }
     cX = opencv_moments[1] / opencv_moments[0];
@@ -908,31 +854,68 @@ namespace vs_reactive_control_rbf_controller
 
       loaded_weights.setZero(75, 40);
       string flnm;
-      flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_rbf_controller/src/stored_weights_version_7_21_07_2023.csv";
+      // flnm = "/home/sotiris/catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_7_21_07_2023.csv";
+      flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_2_20_10_2023.csv";
+      // flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_4_20_10_2023.csv";
+      // flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_2_03_11_2023.csv";
 
-      calculated_rbf_centers = Controller::rbf_centers_calculation();
-      cout << "Shape of calculated_rbf_centers: "
-           << "(" << calculated_rbf_centers.rows() << "," << calculated_rbf_centers.cols() << ")" << endl;
-
-      if (cX != 0 && cY != 0)
+      if (cX != 0 && cY != 0 && Z0 != 0 && Z1 != 0 && Z2 != 0 && Z3 != 0)
       {
-        state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
-        // state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;
-        state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
-        // state_vector_des << s_bar_x_des, s_bar_y_des, sigma_log_des, angle_des_tan;
+        // state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
+        state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;
+        // state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
+        state_vector_des << 0.0, 0.0, sigma_log_des, 0.0;
+
+        // Check for NaN values in state vectors
+        if (state_vector.hasNaN() || state_vector_des.hasNaN())
+        {
+          cerr << "Error: NaN values in state vectors." << endl;
+          cerr << "Location: Before velocities calculation." << endl;
+          exit(1); // Exit the function or return an error code as needed
+        }
 
         error = state_vector - state_vector_des;
-        // cout << "error = " << error.transpose() << endl;
-        MatrixXd model = Controller::Dynamics(transformed_features);
+        cout << "state_vector = " << state_vector.transpose() << endl;
+        cout << "state_vector_des = " << state_vector_des.transpose() << endl;
+        // cout << "error " << error.transpose() << endl;
 
-        MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
-        MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
-        MatrixXd grad_x3 = Controller::grad_basis_x3(state_vector);
-        MatrixXd grad_x4 = Controller::grad_basis_x4(state_vector);
+        if ((transformed_first_min_index == 0 && transformed_second_min_index == transformed_features.size() / 2 - 1) || (transformed_first_min_index == transformed_features.size() / 2 - 1 && transformed_second_min_index == 0))
+        {
+          MatrixXd model = Controller::Dynamics(transformed_features, transformed_first_min_index, transformed_second_min_index);
+          // cout << "model calculated!" << endl;
+          // cout << "model = \n"
+          //      << model << endl;
 
-        loaded_weights = Controller::weights_loading(flnm);
-        grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
-        velocities = -0.5 * R * model.transpose() * grad_weights.transpose();
+          // MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
+          // MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
+          // MatrixXd grad_x3 = Controller::grad_basis_x3(state_vector);
+          // MatrixXd grad_x4 = Controller::grad_basis_x4(state_vector);
+          MatrixXd grad_x1 = Controller::grad_basis_x1(error);
+          MatrixXd grad_x2 = Controller::grad_basis_x2(error);
+          MatrixXd grad_x3 = Controller::grad_basis_x3(error);
+          MatrixXd grad_x4 = Controller::grad_basis_x4(error);
+
+          loaded_weights = Controller::weights_loading(flnm);
+          grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
+
+          // Check for NaN values in matrices
+          if (model.hasNaN() || grad_x1.hasNaN() || grad_x2.hasNaN() || grad_x3.hasNaN() || grad_x4.hasNaN() || grad_weights.hasNaN())
+          {
+            cerr << "Error: NaN values in matrices." << endl;
+            cerr << "Location: Before velocities calculation." << endl;
+            exit(1); // Exit the function or return an error code as needed
+          }
+
+          velocities = -0.5 * R * model.transpose() * grad_weights.transpose();
+
+          // Check for NaN values in velocities
+          if (isnan(velocities.sum()))
+          {
+            cerr << "Error: NaN values in velocities." << endl;
+            cerr << "Location: After velocities calculation." << endl;
+            exit(1); // Exit the function or return an error code as needed
+          }
+        }
       }
 
       //****SEND VELOCITIES TO AUTOPILOT THROUGH MAVROS****//
@@ -952,7 +935,36 @@ namespace vs_reactive_control_rbf_controller
       dataMsg.velocity.z = gain_tz * Tz;
       dataMsg.yaw_rate = gain_yaw * Oz;
 
-      printf("Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
+      printf("Drone Velocities before failsafe Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
+      cout << "\n"
+           << endl;
+
+      if (dataMsg.velocity.x >= 1.0)
+      {
+        dataMsg.velocity.x = 0.75;
+      }
+      if (dataMsg.velocity.x <= -1.0)
+      {
+        dataMsg.velocity.x = -0.75;
+      }
+      if (dataMsg.velocity.y >= 0.5)
+      {
+        dataMsg.velocity.y = 0.4;
+      }
+      if (dataMsg.velocity.y <= -0.4)
+      {
+        dataMsg.velocity.y = -0.4;
+      }
+      if (dataMsg.yaw_rate >= 0.3)
+      {
+        dataMsg.yaw_rate = 0.2;
+      }
+      if (dataMsg.yaw_rate <= -0.3)
+      {
+        dataMsg.yaw_rate = -0.2;
+      }
+
+      printf("Final Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
       cout << "\n"
            << endl;
 
@@ -968,16 +980,9 @@ namespace vs_reactive_control_rbf_controller
         state_vec_desMsg.data.push_back(state_vector_des[i]);
       }
 
-      std_msgs::Float64MultiArray error_Msg;
-      for (int i = 0; i < error.size(); i++)
-      {
-        error_Msg.data.push_back(error[i]);
-      }
-
       state_vec_pub_.publish(state_vecMsg);
       state_vec_des_pub_.publish(state_vec_desMsg);
-      img_moments_error_pub_.publish(error_Msg);
-      // vel_pub.publish(dataMsg);
+      vel_pub_.publish(dataMsg);
     }
   }
 
