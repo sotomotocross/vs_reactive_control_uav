@@ -25,7 +25,6 @@ using namespace Eigen;
 
 namespace vs_reactive_control_controller
 {
-
   /**
    * @brief The controller class used for HW test
    * this controller tracks a spinning line by calculating
@@ -44,14 +43,14 @@ namespace vs_reactive_control_controller
      */
     void altitudeCallback(const std_msgs::Float64::ConstPtr &alt_message);
 
-    void featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr & s_message);
+    void featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message);
 
-    void featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr & s_message);
+    void featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr &s_message);
 
     MatrixXd VelTrans1(MatrixXd CameraVel1);
     MatrixXd VelTrans(MatrixXd CameraVel);
 
-    MatrixXd Dynamics(VectorXd feat_prop);
+    MatrixXd Dynamics(VectorXd feat_prop, int transformed_first_min_index, int transformed_second_min_index);
 
     MatrixXd grad_basis_x1(VectorXd x);
     MatrixXd grad_basis_x2(VectorXd x);
@@ -59,7 +58,7 @@ namespace vs_reactive_control_controller
     MatrixXd grad_basis_x4(VectorXd x);
 
     MatrixXd weights_loading(string filename);
-
+    
     /**
      * @brief controller update, calculated vel cmd and publishes it
      */
@@ -79,10 +78,10 @@ namespace vs_reactive_control_controller
 
     ros::Publisher vel_pub_;
     ros::Publisher rec_pub_;
-    ros::Publisher state_vec_pub_ ;
-    ros::Publisher state_vec_des_pub_ ;
-    ros::Publisher img_moments_error_pub_ ;
-    
+    ros::Publisher state_vec_pub_;
+    ros::Publisher state_vec_des_pub_;
+    ros::Publisher img_moments_error_pub_;
+
     const int dim_inputs = 4;
     int dim_s = 4;
 
@@ -113,7 +112,7 @@ namespace vs_reactive_control_controller
     double angle_tangent, angle_radian, angle_deg;
 
     double transformed_s_bar_x, transformed_s_bar_y;
-    double transformed_first_min_index, transformed_second_min_index;
+    int transformed_first_min_index, transformed_second_min_index;
     double transformed_sigma, transformed_sigma_square, transformed_sigma_square_log;
     double transformed_tangent, transformed_angle_radian, transformed_angle_deg;
 

@@ -21,7 +21,6 @@
 
 namespace vs_reactive_control_controller
 {
-
   Controller::Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh) : nh_(nh), pnh_(pnh)
   {
     // variables initialization
@@ -65,7 +64,6 @@ namespace vs_reactive_control_controller
     vel_pub_ = nh.advertise<mavros_msgs::PositionTarget>("/mavros/setpoint_raw/local", 1);
     state_vec_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/state_vec", 1);
     state_vec_des_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/state_vec_des", 1);
-    img_moments_error_pub_ = nh.advertise<std_msgs::Float64MultiArray>("/img_moments_error", 1);
 
     std::thread control_loop_thread(&Controller::update, this);
     control_loop_thread.detach();
@@ -76,7 +74,7 @@ namespace vs_reactive_control_controller
     vel_pub_.shutdown();
   }
 
-  MatrixXd Controller::Dynamics(VectorXd feat_prop)
+  MatrixXd Controller::Dynamics(VectorXd feat_prop, int first, int second)
   {
     MatrixXd model_mat(dim_s, dim_inputs);
 
@@ -87,83 +85,99 @@ namespace vs_reactive_control_controller
     double term_2_5 = 0.0;
 
     int N;
-    N = transformed_features.size() / 2;
+    N = feat_prop.size() / 2;
+    // cout << "\nN = " << N << endl;
+    // cout << "first = " << first << endl;
+    // cout << "second = " << second << endl;
+    // cout << "transformed_first_min_index = " << transformed_first_min_index << endl;
+    // cout << "transformed_second_min_index = " << transformed_second_min_index << endl;
+    // cout << "first_min_index = " << first_min_index << endl;
+    // cout << "second_min_index = " << second_min_index << endl;
 
-    for (int i = 0; i < N - 1; i += 2)
-    {
-      term_1_4 = term_1_4 + feat_prop[i] * feat_prop[i + 1];
-      term_1_5 = term_1_5 + (1 + pow(feat_prop[i], 2));
-      term_2_4 = term_2_4 + (1 + pow(feat_prop[i + 1], 2));
-      term_2_5 = term_2_5 + feat_prop[i] * feat_prop[i + 1];
-    }
+    // if ((first == 0 && second == N - 1) || (first == N - 1 && second == 0))
+    // {
 
-    term_1_4 = term_1_4 / N;
-    term_1_5 = -term_1_5 / N;
-    term_2_4 = term_2_4 / N;
-    term_2_5 = -term_2_5 / N;
+      for (int i = 0; i < N - 1; i += 2)
+      {
+        term_1_4 = term_1_4 + feat_prop[i] * feat_prop[i + 1];
+        term_1_5 = term_1_5 + (1 + pow(feat_prop[i], 2));
+        term_2_4 = term_2_4 + (1 + pow(feat_prop[i + 1], 2));
+        term_2_5 = term_2_5 + feat_prop[i] * feat_prop[i + 1];
+      }
 
-    double g_4_4, g_4_5, g_4_6;
+      term_1_4 = term_1_4 / N;
+      term_1_5 = -term_1_5 / N;
+      term_2_4 = term_2_4 / N;
+      term_2_5 = -term_2_5 / N;
 
-    // Angle dynamics calculation
-    // Fourth term
-    double term_4_4_1, term_4_4_2, term_4_4_3, term_4_4_4;
-    double sum_4_4_1 = 0.0, sum_4_4_2 = 0.0;
+      double g_4_4, g_4_5, g_4_6;
 
-    double k = 0;
-    VectorXd x(N);
-    VectorXd y(N);
+      // Angle dynamics calculation
+      // Fourth term
+      double term_4_4_1, term_4_4_2, term_4_4_3, term_4_4_4;
+      double sum_4_4_1 = 0.0, sum_4_4_2 = 0.0;
 
-    for (int i = 0; i < 2 * N - 1; i += 2)
-    {
-      x[k] = feat_prop[i];
-      k++;
-    }
+      double k = 0;
+      VectorXd x(N);
+      VectorXd y(N);
 
-    k = 0;
+      for (int i = 0; i < 2 * N - 1; i += 2)
+      {
+        x[k] = feat_prop[i];
+        k++;
+      }
 
-    for (int i = 1; i < 2 * N; i += 2)
-    {
-      y[k] = feat_prop[i];
-      k++;
-    }
+      k = 0;
 
-    for (int i = 0; i < N - 1; i += 2)
-    {
-      sum_4_4_1 = sum_4_4_1 + pow(feat_prop[i + 1], 2);
-      sum_4_4_2 = sum_4_4_2 + feat_prop[i] * feat_prop[i + 1];
-    }
+      for (int i = 1; i < 2 * N; i += 2)
+      {
+        y[k] = feat_prop[i];
+        k++;
+      }
 
-    term_4_4_1 = transformed_tangent / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_4_2 = (pow(y[transformed_first_min_index], 2) + pow(y[transformed_second_min_index], 2) - (2 / N) * sum_4_4_1);
-    term_4_4_3 = -1 / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_4_4 = (x[transformed_first_min_index] * y[transformed_first_min_index] + x[transformed_second_min_index] * y[transformed_second_min_index] - (2 / N) * sum_4_4_2);
+      for (int i = 0; i < N - 1; i += 2)
+      {
+        // cout << "i = " << i << endl;
+        sum_4_4_1 = sum_4_4_1 + pow(feat_prop[i + 1], 2);
+        sum_4_4_2 = sum_4_4_2 + feat_prop[i] * feat_prop[i + 1];
+      }
 
-    g_4_4 = term_4_4_1 * term_4_4_2 + term_4_4_3 * term_4_4_4;
+      term_4_4_1 = transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
+      term_4_4_2 = (pow(y[first], 2) + pow(y[second], 2) - (2 / N) * sum_4_4_1);
+      term_4_4_3 = -1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
+      term_4_4_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_4_2);
 
-    // Fifth term
-    double term_4_5_1, term_4_5_2, term_4_5_3, term_4_5_4;
-    double sum_4_5_1 = 0.0, sum_4_5_2 = 0.0;
+      g_4_4 = term_4_4_1 * term_4_4_2 + term_4_4_3 * term_4_4_4;
 
-    for (int i = 0; i < N - 1; i += 2)
-    {
-      sum_4_5_1 = sum_4_5_1 + pow(feat_prop[i], 2);
-      sum_4_5_2 = sum_4_5_2 + feat_prop[i] * feat_prop[i + 1];
-    }
+      // Fifth term
+      double term_4_5_1, term_4_5_2, term_4_5_3, term_4_5_4;
+      double sum_4_5_1 = 0.0, sum_4_5_2 = 0.0;
 
-    term_4_5_1 = 1 / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_5_2 = (pow(x[transformed_first_min_index], 2) + pow(x[transformed_second_min_index], 2) - (2 / N) * sum_4_5_1);
-    term_4_5_3 = -transformed_tangent / (y[transformed_first_min_index] + y[transformed_second_min_index] - 2 * transformed_s_bar_y);
-    term_4_5_4 = (x[transformed_first_min_index] * y[transformed_first_min_index] + x[transformed_second_min_index] * y[transformed_second_min_index] - (2 / N) * sum_4_5_2);
+      for (int i = 0; i < N - 1; i += 2)
+      {
+        // cout << "i = " << i << endl;
+        sum_4_5_1 = sum_4_5_1 + pow(feat_prop[i], 2);
+        sum_4_5_2 = sum_4_5_2 + feat_prop[i] * feat_prop[i + 1];
+      }
 
-    g_4_5 = term_4_5_1 * term_4_5_2 + term_4_5_3 * term_4_5_4;
+      term_4_5_1 = 1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
+      term_4_5_2 = (pow(x[first], 2) + pow(x[second], 2) - (2 / N) * sum_4_5_1);
+      term_4_5_3 = -transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
+      term_4_5_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_5_2);
 
-    // Fifth term
-    g_4_6 = pow(transformed_tangent, 2) + 1;
+      g_4_5 = term_4_5_1 * term_4_5_2 + term_4_5_3 * term_4_5_4;
 
-    model_mat << -1 / Z0, 0.0, transformed_s_bar_x / Z0, transformed_s_bar_y,
-        0.0, -1 / Z0, transformed_s_bar_y / Z0, -transformed_s_bar_x,
-        0.0, 0.0, 2 / Z0, 0.0,
-        0.0, 0.0, 0.0, g_4_6;
+      // Fifth term
+      g_4_6 = pow(transformed_tangent, 2) + 1;
+
+      model_mat << -1 / Z0, 0.0, transformed_s_bar_x / Z0, transformed_s_bar_y,
+          0.0, -1 / Z0, transformed_s_bar_y / Z0, -transformed_s_bar_x,
+          0.0, 0.0, 2 / Z0, 0.0,
+          0.0, 0.0, 0.0, g_4_6;
+    // }
+
+    // cout << "model calculation before returning to main!" << endl;
+    // cout << "model_mat = \n" << model_mat << endl;
 
     return model_mat;
   }
@@ -713,15 +727,8 @@ namespace vs_reactive_control_controller
   // ****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom(const img_seg_cnn::POLYcalc_custom::ConstPtr &s_message)
   {
-    // cout << "~~~~~~~~~~ featureCallback_poly_custom ~~~~~~~~~~" << endl;
     feature_vector.setZero(s_message->features.size());
     polygon_features.setZero(s_message->features.size() / 2, 2);
-
-    // cout << "feature_vector.size() = " << feature_vector.size() << endl;
-    // cout << "polygon_features.size() = " << polygon_features.size() << endl;
-
-    // cout << "feature_vector = " << feature_vector << endl;
-    // cout << "polygon_features = " << polygon_features << endl;
 
     for (int i = 0; i < s_message->features.size() - 1; i += 2)
     {
@@ -749,13 +756,6 @@ namespace vs_reactive_control_controller
     angle_radian = s_message->angle_radian;
     angle_deg = s_message->angle_deg;
 
-    // cout << "~~~~~~~~~~ featureCallback_poly_custom after assignment ~~~~~~~~~~" << endl;
-    // cout << "feature_vector.size() = " << feature_vector.size() << endl;
-    // cout << "polygon_features.size() = " << polygon_features.size() << endl;
-
-    // cout << "feature_vector = " << feature_vector << endl;
-    // cout << "polygon_features = " << polygon_features << endl;
-
     flag = 1;
     // cout << "(not transformed) Feature callback flag: " << flag << endl;
   }
@@ -763,28 +763,21 @@ namespace vs_reactive_control_controller
   // //****UPDATE IMAGE FEATURE COORDINATES****//
   void Controller::featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message)
   {
-    cout << "~~~~~~~~~~ featureCallback_poly_custom_tf ~~~~~~~~~~" << endl;
-    transformed_features.setZero(s_message->transformed_features.size());
-    transformed_polygon_features.setZero(s_message->transformed_features.size() / 2, 2);
+    // cout << "~~~~~~~~~~ featureCallback_poly_custom_tf ~~~~~~~~~~" << endl;
+    int N = s_message -> transformed_features.size();
+    transformed_features.setZero(N);
+    transformed_polygon_features.setZero(N / 2, 2);
 
-    cout << "transformed_features.size() = " << transformed_features.size() << endl;
-    cout << "transformed_polygon_features.size() = " << transformed_polygon_features.size() << endl;
-
-    // cout << "transformed_features = " << transformed_features << endl;
-    // cout << "transformed_polygon_features = " << transformed_polygon_features << endl;
-
-    for (int i = 0; i < s_message->transformed_features.size() - 1; i += 2)
+    for (int i = 0; i < N - 1; i += 2)
     {
-      cout << "Kai telika skame sto prwto loop?" << endl;
-      cout << "i = " << i << endl;
+      // cout << "i = " << i << endl;
       transformed_features[i] = s_message->transformed_features[i];
       transformed_features[i + 1] = s_message->transformed_features[i + 1];
     }
 
-    for (int i = 0, j = 0; i < s_message->transformed_features.size() - 1 && j < s_message->transformed_features.size() / 2; i += 2, ++j)
+    for (int i = 0, j = 0; i < N - 1 && j < N / 2; i += 2, ++j)
     {
-      cout << "Sto 2o loop?" << endl;
-      cout << "i = " << i << endl;
+      // cout << "i = " << i << endl;
       transformed_polygon_features(j, 0) = transformed_features[i];
       transformed_polygon_features(j, 1) = transformed_features[i + 1];
     }
@@ -806,8 +799,7 @@ namespace vs_reactive_control_controller
     opencv_moments.setZero(s_message->moments.size());
     for (int i = 0; i < s_message->moments.size(); i++)
     {
-      cout << "I exoume kana themataki sto opencv_moments loop?" << endl;
-      cout << "i = " << i << endl;
+      // cout << "i = " << i << endl;
       opencv_moments[i] = s_message->moments[i];
     }
     cX = opencv_moments[1] / opencv_moments[0];
@@ -815,13 +807,6 @@ namespace vs_reactive_control_controller
 
     cX_int = (int)cX;
     cY_int = (int)cY;
-
-    cout << "~~~~~~~~~~ featureCallback_poly_custom_tf after assignment ~~~~~~~~~~" << endl;
-    cout << "transformed_features.size() = " << transformed_features.size() << endl;
-    cout << "transformed_polygon_features.size() = " << transformed_polygon_features.size() << endl;
-
-    cout << "transformed_features = " << transformed_features << endl;
-    cout << "transformed_polygon_features = " << transformed_polygon_features << endl;
 
     flag = 1;
     // cout << "Feature callback flag: " << flag << endl;
@@ -834,10 +819,6 @@ namespace vs_reactive_control_controller
     Z1 = alt_message->data;
     Z2 = alt_message->data;
     Z3 = alt_message->data;
-    // cout << "Z0 = " << Z0 << endl;
-    // cout << "Z1 = " << Z1 << endl;
-    // cout << "Z2 = " << Z2 << endl;
-    // cout << "Z3 = " << Z3 << endl;
     flag = 1;
     // cout << "flag = " << flag << endl;
   }
@@ -880,7 +861,7 @@ namespace vs_reactive_control_controller
       if (cX != 0 && cY != 0 && Z0 != 0 && Z1 != 0 && Z2 != 0 && Z3 != 0)
       {
         // state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
-        state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;;
+        state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;
         // state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
         state_vector_des << 0.0, 0.0, sigma_log_des, 0.0;
 
@@ -893,37 +874,46 @@ namespace vs_reactive_control_controller
         }
 
         error = state_vector - state_vector_des;
-        // cout << "sigma_log_des = " << sigma_log_des << endl;
-        // cout << "state_vector = " << state_vector.transpose() << endl;
-        // cout << "state_vector_des = " << state_vector_des.transpose() << endl;
-        // cout << "error = " << error.transpose() << endl;
+        cout << "state_vector = " << state_vector.transpose() << endl;
+        cout << "state_vector_des = " << state_vector_des.transpose() << endl;
+        // cout << "error " << error.transpose() << endl;
 
-        MatrixXd model = Controller::Dynamics(transformed_features);
-
-        MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
-        MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
-        MatrixXd grad_x3 = Controller::grad_basis_x3(state_vector);
-        MatrixXd grad_x4 = Controller::grad_basis_x4(state_vector);
-
-        loaded_weights = Controller::weights_loading(flnm);
-        grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
-
-        // Check for NaN values in matrices
-        if (model.hasNaN() || grad_x1.hasNaN() || grad_x2.hasNaN() || grad_x3.hasNaN() || grad_x4.hasNaN() || grad_weights.hasNaN())
+        if ((transformed_first_min_index == 0 && transformed_second_min_index == transformed_features.size() / 2 - 1) || (transformed_first_min_index == transformed_features.size() / 2 - 1 && transformed_second_min_index == 0))
         {
-          cerr << "Error: NaN values in matrices." << endl;
-          cerr << "Location: Before velocities calculation." << endl;
-          exit(1); // Exit the function or return an error code as needed
-        }
+          MatrixXd model = Controller::Dynamics(transformed_features, transformed_first_min_index, transformed_second_min_index);
+          // cout << "model calculated!" << endl;
+          // cout << "model = \n"
+          //      << model << endl;
 
-        velocities = -0.5 * R * model.transpose() * grad_weights.transpose();
+          // MatrixXd grad_x1 = Controller::grad_basis_x1(state_vector);
+          // MatrixXd grad_x2 = Controller::grad_basis_x2(state_vector);
+          // MatrixXd grad_x3 = Controller::grad_basis_x3(state_vector);
+          // MatrixXd grad_x4 = Controller::grad_basis_x4(state_vector);
+          MatrixXd grad_x1 = Controller::grad_basis_x1(error);
+          MatrixXd grad_x2 = Controller::grad_basis_x2(error);
+          MatrixXd grad_x3 = Controller::grad_basis_x3(error);
+          MatrixXd grad_x4 = Controller::grad_basis_x4(error);
 
-        // Check for NaN values in velocities
-        if (isnan(velocities.sum()))
-        {
-          cerr << "Error: NaN values in velocities." << endl;
-          cerr << "Location: After velocities calculation." << endl;
-          exit(1); // Exit the function or return an error code as needed
+          loaded_weights = Controller::weights_loading(flnm);
+          grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
+
+          // Check for NaN values in matrices
+          if (model.hasNaN() || grad_x1.hasNaN() || grad_x2.hasNaN() || grad_x3.hasNaN() || grad_x4.hasNaN() || grad_weights.hasNaN())
+          {
+            cerr << "Error: NaN values in matrices." << endl;
+            cerr << "Location: Before velocities calculation." << endl;
+            exit(1); // Exit the function or return an error code as needed
+          }
+
+          velocities = -0.5 * R * model.transpose() * grad_weights.transpose();
+
+          // Check for NaN values in velocities
+          if (isnan(velocities.sum()))
+          {
+            cerr << "Error: NaN values in velocities." << endl;
+            cerr << "Location: After velocities calculation." << endl;
+            exit(1); // Exit the function or return an error code as needed
+          }
         }
       }
 
@@ -939,14 +929,14 @@ namespace vs_reactive_control_controller
       Tz = VelTrans1(VelTrans(caminputs))(2, 0);
       Oz = VelTrans1(VelTrans(caminputs))(5, 0);
 
-      // printf("Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", Tx, Ty, Tz, Oz);
-      // cout << "\n"
-      //      << endl;
-
       dataMsg.velocity.x = gain_tx * Tx + forward_term;
       dataMsg.velocity.y = gain_ty * Ty;
       dataMsg.velocity.z = gain_tz * Tz;
       dataMsg.yaw_rate = gain_yaw * Oz;
+
+      printf("Drone Velocities before failsafe Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
+      cout << "\n"
+           << endl;
 
       if (dataMsg.velocity.x >= 1.0)
       {
@@ -973,9 +963,9 @@ namespace vs_reactive_control_controller
         dataMsg.yaw_rate = -0.2;
       }
 
-      // printf("Final Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
-      // cout << "\n"
-      //      << endl;
+      printf("Final Drone Velocities Tx,Ty,Tz,Oz(%g,%g,%g,%g)", dataMsg.velocity.x, dataMsg.velocity.y, dataMsg.velocity.z, dataMsg.yaw_rate);
+      cout << "\n"
+           << endl;
 
       std_msgs::Float64MultiArray state_vecMsg;
       for (int i = 0; i < state_vector.size(); i++)
@@ -989,16 +979,9 @@ namespace vs_reactive_control_controller
         state_vec_desMsg.data.push_back(state_vector_des[i]);
       }
 
-      // std_msgs::Float64MultiArray error_Msg;
-      // for (int i = 0; i < error.size(); i++)
-      // {
-      //   error_Msg.data.push_back(error[i]);
-      // }
-
       state_vec_pub_.publish(state_vecMsg);
       state_vec_des_pub_.publish(state_vec_desMsg);
-      // img_moments_error_pub_.publish(error_Msg);
-      // vel_pub_.publish(dataMsg);
+      vel_pub_.publish(dataMsg);
     }
   }
 
