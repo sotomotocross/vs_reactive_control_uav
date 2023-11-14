@@ -3,7 +3,6 @@
 #include <ros/ros.h>
 
 #include <thread>
-#include <geometry_msgs/TwistStamped.h>
 #include "geometry_msgs/Twist.h"
 #include "mavros_msgs/PositionTarget.h"
 #include "img_seg_cnn/PREDdata.h"
@@ -23,8 +22,9 @@
 using namespace std;
 using namespace Eigen;
 
-namespace vs_reactive_control_controller
+namespace vs_reactive_control_rbf_controller
 {
+
   /**
    * @brief The controller class used for HW test
    * this controller tracks a spinning line by calculating
@@ -58,7 +58,7 @@ namespace vs_reactive_control_controller
     MatrixXd grad_basis_x4(VectorXd x);
 
     MatrixXd weights_loading(string filename);
-    
+
     /**
      * @brief controller update, calculated vel cmd and publishes it
      */

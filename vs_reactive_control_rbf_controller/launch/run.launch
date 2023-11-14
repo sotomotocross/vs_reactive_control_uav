@@ -1,0 +1,5 @@
+<launch>
+    <node name="vs_reactive_control_rbf_controller" pkg="vs_reactive_control_rbf_controller" type="vs_reactive_control_rbf_controller_node" output="screen">
+        <rosparam file="$(find vs_reactive_control_rbf_controller)/param/param.yaml" />
+    </node>
+</launch>

@@ -1,4 +1,4 @@
-#include "vs_reactive_control_controller/controller.hpp"
+#include "vs_reactive_control_rbf_controller/controller.hpp"
 
 #include <thread>
 #include <geometry_msgs/TwistStamped.h>
@@ -19,8 +19,9 @@
 #include <cmath>
 #include <eigen3/Eigen/Dense>
 
-namespace vs_reactive_control_controller
+namespace vs_reactive_control_rbf_controller
 {
+
   Controller::Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh) : nh_(nh), pnh_(pnh)
   {
     // variables initialization
@@ -97,83 +98,83 @@ namespace vs_reactive_control_controller
     // if ((first == 0 && second == N - 1) || (first == N - 1 && second == 0))
     // {
 
-      for (int i = 0; i < N - 1; i += 2)
-      {
-        term_1_4 = term_1_4 + feat_prop[i] * feat_prop[i + 1];
-        term_1_5 = term_1_5 + (1 + pow(feat_prop[i], 2));
-        term_2_4 = term_2_4 + (1 + pow(feat_prop[i + 1], 2));
-        term_2_5 = term_2_5 + feat_prop[i] * feat_prop[i + 1];
-      }
+    for (int i = 0; i < N - 1; i += 2)
+    {
+      term_1_4 = term_1_4 + feat_prop[i] * feat_prop[i + 1];
+      term_1_5 = term_1_5 + (1 + pow(feat_prop[i], 2));
+      term_2_4 = term_2_4 + (1 + pow(feat_prop[i + 1], 2));
+      term_2_5 = term_2_5 + feat_prop[i] * feat_prop[i + 1];
+    }
 
-      term_1_4 = term_1_4 / N;
-      term_1_5 = -term_1_5 / N;
-      term_2_4 = term_2_4 / N;
-      term_2_5 = -term_2_5 / N;
+    term_1_4 = term_1_4 / N;
+    term_1_5 = -term_1_5 / N;
+    term_2_4 = term_2_4 / N;
+    term_2_5 = -term_2_5 / N;
 
-      double g_4_4, g_4_5, g_4_6;
+    double g_4_4, g_4_5, g_4_6;
 
-      // Angle dynamics calculation
-      // Fourth term
-      double term_4_4_1, term_4_4_2, term_4_4_3, term_4_4_4;
-      double sum_4_4_1 = 0.0, sum_4_4_2 = 0.0;
+    // Angle dynamics calculation
+    // Fourth term
+    double term_4_4_1, term_4_4_2, term_4_4_3, term_4_4_4;
+    double sum_4_4_1 = 0.0, sum_4_4_2 = 0.0;
 
-      double k = 0;
-      VectorXd x(N);
-      VectorXd y(N);
+    double k = 0;
+    VectorXd x(N);
+    VectorXd y(N);
 
-      for (int i = 0; i < 2 * N - 1; i += 2)
-      {
-        x[k] = feat_prop[i];
-        k++;
-      }
+    for (int i = 0; i < 2 * N - 1; i += 2)
+    {
+      x[k] = feat_prop[i];
+      k++;
+    }
 
-      k = 0;
+    k = 0;
 
-      for (int i = 1; i < 2 * N; i += 2)
-      {
-        y[k] = feat_prop[i];
-        k++;
-      }
+    for (int i = 1; i < 2 * N; i += 2)
+    {
+      y[k] = feat_prop[i];
+      k++;
+    }
 
-      for (int i = 0; i < N - 1; i += 2)
-      {
-        // cout << "i = " << i << endl;
-        sum_4_4_1 = sum_4_4_1 + pow(feat_prop[i + 1], 2);
-        sum_4_4_2 = sum_4_4_2 + feat_prop[i] * feat_prop[i + 1];
-      }
+    for (int i = 0; i < N - 1; i += 2)
+    {
+      // cout << "i = " << i << endl;
+      sum_4_4_1 = sum_4_4_1 + pow(feat_prop[i + 1], 2);
+      sum_4_4_2 = sum_4_4_2 + feat_prop[i] * feat_prop[i + 1];
+    }
 
-      term_4_4_1 = transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
-      term_4_4_2 = (pow(y[first], 2) + pow(y[second], 2) - (2 / N) * sum_4_4_1);
-      term_4_4_3 = -1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
-      term_4_4_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_4_2);
+    term_4_4_1 = transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_4_2 = (pow(y[first], 2) + pow(y[second], 2) - (2 / N) * sum_4_4_1);
+    term_4_4_3 = -1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_4_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_4_2);
 
-      g_4_4 = term_4_4_1 * term_4_4_2 + term_4_4_3 * term_4_4_4;
+    g_4_4 = term_4_4_1 * term_4_4_2 + term_4_4_3 * term_4_4_4;
 
-      // Fifth term
-      double term_4_5_1, term_4_5_2, term_4_5_3, term_4_5_4;
-      double sum_4_5_1 = 0.0, sum_4_5_2 = 0.0;
+    // Fifth term
+    double term_4_5_1, term_4_5_2, term_4_5_3, term_4_5_4;
+    double sum_4_5_1 = 0.0, sum_4_5_2 = 0.0;
 
-      for (int i = 0; i < N - 1; i += 2)
-      {
-        // cout << "i = " << i << endl;
-        sum_4_5_1 = sum_4_5_1 + pow(feat_prop[i], 2);
-        sum_4_5_2 = sum_4_5_2 + feat_prop[i] * feat_prop[i + 1];
-      }
+    for (int i = 0; i < N - 1; i += 2)
+    {
+      // cout << "i = " << i << endl;
+      sum_4_5_1 = sum_4_5_1 + pow(feat_prop[i], 2);
+      sum_4_5_2 = sum_4_5_2 + feat_prop[i] * feat_prop[i + 1];
+    }
 
-      term_4_5_1 = 1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
-      term_4_5_2 = (pow(x[first], 2) + pow(x[second], 2) - (2 / N) * sum_4_5_1);
-      term_4_5_3 = -transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
-      term_4_5_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_5_2);
+    term_4_5_1 = 1 / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_5_2 = (pow(x[first], 2) + pow(x[second], 2) - (2 / N) * sum_4_5_1);
+    term_4_5_3 = -transformed_tangent / (y[first] + y[second] - 2 * transformed_s_bar_y);
+    term_4_5_4 = (x[first] * y[first] + x[second] * y[second] - (2 / N) * sum_4_5_2);
 
-      g_4_5 = term_4_5_1 * term_4_5_2 + term_4_5_3 * term_4_5_4;
+    g_4_5 = term_4_5_1 * term_4_5_2 + term_4_5_3 * term_4_5_4;
 
-      // Fifth term
-      g_4_6 = pow(transformed_tangent, 2) + 1;
+    // Fifth term
+    g_4_6 = pow(transformed_tangent, 2) + 1;
 
-      model_mat << -1 / Z0, 0.0, transformed_s_bar_x / Z0, transformed_s_bar_y,
-          0.0, -1 / Z0, transformed_s_bar_y / Z0, -transformed_s_bar_x,
-          0.0, 0.0, 2 / Z0, 0.0,
-          0.0, 0.0, 0.0, g_4_6;
+    model_mat << -1 / Z0, 0.0, transformed_s_bar_x / Z0, transformed_s_bar_y,
+        0.0, -1 / Z0, transformed_s_bar_y / Z0, -transformed_s_bar_x,
+        0.0, 0.0, 2 / Z0, 0.0,
+        0.0, 0.0, 0.0, g_4_6;
     // }
 
     // cout << "model calculation before returning to main!" << endl;
@@ -764,7 +765,7 @@ namespace vs_reactive_control_controller
   void Controller::featureCallback_poly_custom_tf(const img_seg_cnn::POLYcalc_custom_tf::ConstPtr &s_message)
   {
     // cout << "~~~~~~~~~~ featureCallback_poly_custom_tf ~~~~~~~~~~" << endl;
-    int N = s_message -> transformed_features.size();
+    int N = s_message->transformed_features.size();
     transformed_features.setZero(N);
     transformed_polygon_features.setZero(N / 2, 2);
 

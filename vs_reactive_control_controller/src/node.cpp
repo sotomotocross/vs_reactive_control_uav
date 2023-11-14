@@ -7,7 +7,6 @@ int main(int argc, char* argv[])
   ros::NodeHandle nh;
   ros::NodeHandle pnh("~");
 
-
   std::cout << "starting vs_reactive_control_controller_node" << std::endl;
 
   vs_reactive_control_controller::Controller controller(nh, pnh);
