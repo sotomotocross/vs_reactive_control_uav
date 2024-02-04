@@ -858,8 +858,8 @@ namespace vs_reactive_control_controller
       // flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_4_20_10_2023.csv";
       // flnm = "/home/sotiris/controllers_catkin_ws/src/vs_reactive_control_uav/vs_reactive_control_controller/src/stored_weights_version_2_03_11_2023.csv";
 
-      if (cX != 0 && cY != 0 && Z0 != 0 && Z1 != 0 && Z2 != 0 && Z3 != 0)
-      {
+      // if (cX != 0 && cY != 0 && Z0 != 0 && Z1 != 0 && Z2 != 0 && Z3 != 0)
+      // {
         // state_vector << ((opencv_moments[1] / opencv_moments[0]) - cu) / l, ((opencv_moments[2] / opencv_moments[0]) - cv) / l, log(sqrt(opencv_moments[0])), atan(2 * opencv_moments[11] / (opencv_moments[10] - opencv_moments[12]));
         state_vector << transformed_s_bar_x, transformed_s_bar_y, transformed_sigma_square_log, transformed_tangent;
         // state_vector_des << 0.0, 0.0, 5.0, angle_des_tan;
@@ -915,7 +915,7 @@ namespace vs_reactive_control_controller
             exit(1); // Exit the function or return an error code as needed
           }
         }
-      }
+      // }
 
       //****SEND VELOCITIES TO AUTOPILOT THROUGH MAVROS****//
       Matrix<double, 4, 1> caminputs;
