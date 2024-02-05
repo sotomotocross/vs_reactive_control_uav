@@ -2,7 +2,11 @@
 
 #include <ros/ros.h>
 #include "vs_reactive_control_controller/FeatureData.hpp"
-#include "vs_reactive_control_controller/UtilityFunctions.hpp"
+// #include "vs_reactive_control_controller/UtilityFunctions.hpp"
+#include "vs_reactive_control_controller/VelocityTransformer.hpp"
+#include "vs_reactive_control_controller/DynamicsCalculator.hpp"
+#include "vs_reactive_control_controller/GradientBasisCalculator.hpp"
+#include "vs_reactive_control_controller/WeightLoader.hpp"
 
 #include <geometry_msgs/TwistStamped.h>
 #include "geometry_msgs/Twist.h"
@@ -30,7 +34,7 @@ using namespace Eigen;
 
 namespace vs_reactive_control_controller
 {
-  class UtilityFunctions; // Forward declaration
+  class DynamicsCalculator; // Forward declaration
 
   class Controller
   {
@@ -69,7 +73,7 @@ namespace vs_reactive_control_controller
     FeatureData feature_data_;
 
     // Declare a static instance of UtilityFunctions
-    static UtilityFunctions utilityFunctions;
+    static DynamicsCalculator dynamics_calculator;
 
     // Update loop thread
     std::thread control_loop_thread;

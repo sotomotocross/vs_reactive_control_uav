@@ -38,7 +38,11 @@ set(LIB_SOURCES
     # src/controller.cpp
     src/Controller.cpp
     src/FeatureData.cpp
-    src/UtilityFunctions.cpp
+    src/VelocityTransformer.cpp
+    src/DynamicsCalculator.cpp
+    src/GradientBasisCalculator.cpp
+    src/WeightLoader.cpp
+    # src/UtilityFunctions.cpp
 )
 
 # Declare a library

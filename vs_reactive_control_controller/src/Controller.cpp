@@ -1,6 +1,10 @@
 #include "vs_reactive_control_controller/Controller.hpp"
 #include "vs_reactive_control_controller/FeatureData.hpp"
-#include "vs_reactive_control_controller/UtilityFunctions.hpp"
+// #include "vs_reactive_control_controller/UtilityFunctions.hpp"
+#include "vs_reactive_control_controller/VelocityTransformer.hpp"
+#include "vs_reactive_control_controller/DynamicsCalculator.hpp"
+#include "vs_reactive_control_controller/GradientBasisCalculator.hpp"
+#include "vs_reactive_control_controller/WeightLoader.hpp"
 
 #include <geometry_msgs/TwistStamped.h>
 #include "geometry_msgs/Twist.h"
@@ -29,7 +33,7 @@ using namespace Eigen;
 namespace vs_reactive_control_controller
 {
   // Initialize the static member of the UtilityFunctions
-  UtilityFunctions Controller::utilityFunctions;
+  DynamicsCalculator Controller::dynamics_calculator;
   
   // Constructor
   Controller::Controller(ros::NodeHandle &nh, ros::NodeHandle &pnh)
@@ -278,17 +282,18 @@ namespace vs_reactive_control_controller
         {
           // MatrixXd model = UtilityFunctions::Dynamics(transformed_features, transformed_first_min_index, transformed_second_min_index, transformed_s_bar_x, transformed_s_bar_y, transformed_tangent, Z0);
           // Call Dynamics function using the static instance
-          MatrixXd model = utilityFunctions.Dynamics(transformed_features, transformed_first_min_index, transformed_second_min_index, transformed_s_bar_x, transformed_s_bar_y, transformed_tangent, Z0);
+          // MatrixXd model = DynamicsCalculator::Dynamics(transformed_features, transformed_first_min_index, transformed_second_min_index, transformed_s_bar_x, transformed_s_bar_y, transformed_tangent, Z0);
+          MatrixXd model = dynamics_calculator.Dynamics(transformed_features, transformed_first_min_index, transformed_second_min_index, transformed_s_bar_x, transformed_s_bar_y, transformed_tangent, Z0);
           // cout << "model calculated!" << endl;
           // cout << "model = \n"
           //      << model << endl;
 
-          MatrixXd grad_x1 = UtilityFunctions::grad_basis_x1(error);
-          MatrixXd grad_x2 = UtilityFunctions::grad_basis_x2(error);
-          MatrixXd grad_x3 = UtilityFunctions::grad_basis_x3(error);
-          MatrixXd grad_x4 = UtilityFunctions::grad_basis_x4(error);
+          MatrixXd grad_x1 = GradientBasisCalculator::grad_basis_x1(error);
+          MatrixXd grad_x2 = GradientBasisCalculator::grad_basis_x2(error);
+          MatrixXd grad_x3 = GradientBasisCalculator::grad_basis_x3(error);
+          MatrixXd grad_x4 = GradientBasisCalculator::grad_basis_x4(error);
 
-          loaded_weights = UtilityFunctions::weights_loading(flnm);
+          loaded_weights = WeightLoader::weights_loading(flnm);
           grad_weights << grad_x1 * loaded_weights.col(30), grad_x2 * loaded_weights.col(30), grad_x3 * loaded_weights.col(30), grad_x4 * loaded_weights.col(30);
 
           // Check for NaN values in matrices
@@ -318,10 +323,10 @@ namespace vs_reactive_control_controller
       caminputs(2, 0) = velocities[2];
       caminputs(3, 0) = velocities[3];
 
-      Tx = UtilityFunctions::VelTrans1(UtilityFunctions::VelTrans(caminputs))(0, 0);
-      Ty = UtilityFunctions::VelTrans1(UtilityFunctions::VelTrans(caminputs))(1, 0);
-      Tz = UtilityFunctions::VelTrans1(UtilityFunctions::VelTrans(caminputs))(2, 0);
-      Oz = UtilityFunctions::VelTrans1(UtilityFunctions::VelTrans(caminputs))(5, 0);
+      Tx = VelocityTransformer::VelTrans1(VelocityTransformer::VelTrans(caminputs))(0, 0);
+      Ty = VelocityTransformer::VelTrans1(VelocityTransformer::VelTrans(caminputs))(1, 0);
+      Tz = VelocityTransformer::VelTrans1(VelocityTransformer::VelTrans(caminputs))(2, 0);
+      Oz = VelocityTransformer::VelTrans1(VelocityTransformer::VelTrans(caminputs))(5, 0);
 
       dataMsg.velocity.x = gain_tx * Tx + forward_term;
       dataMsg.velocity.y = gain_ty * Ty;
@@ -375,7 +380,7 @@ namespace vs_reactive_control_controller
 
       state_vec_pub_.publish(state_vecMsg);
       state_vec_des_pub_.publish(state_vec_desMsg);
-      vel_pub_.publish(dataMsg);
+      // vel_pub_.publish(dataMsg);
     }
   }
 } // namespace
