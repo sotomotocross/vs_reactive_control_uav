@@ -1,9 +1,17 @@
 reactive_controller:
   forward_term: 0.75
-  # forward_term: 0.35
-  gain_tx: 0.0000
-  gain_ty: -0.00065
+
+  # gain_tx: 0.0000
+  # gain_ty: -0.00065
+  # gain_tz: 0.0
+  # gain_yaw: -0.000052
+
+  # gain_tx: 0.0000
   # gain_ty: -0.00075
-  gain_tz: 0.0
-  gain_yaw: -0.000052
+  # gain_tz: 0.0
   # gain_yaw: -0.000045
+
+  gain_tx: 0.0000
+  gain_ty: -0.00098
+  gain_tz: 0.0
+  gain_yaw: -0.000032
