@@ -220,9 +220,8 @@ namespace vs_reactive_control_controller
   {
     // Main update logic...
 
-
     // Add print statements for debugging
-    ROS_INFO("Update function called...");
+    // ROS_INFO("Update function called...");
     //****SEND VELOCITIES TO AUTOPILOT THROUGH MAVROS****//
     mavros_msgs::PositionTarget dataMsg;
     dataMsg.coordinate_frame = 8;
